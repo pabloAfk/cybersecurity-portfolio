@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>ShadowAnalyzer v1.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg0: #050a12;
+      --bg1: #0c1422;
+      --bg2: #111d2e;
+      --panel: rgba(10,18,32,0.85);
+      --border: rgba(56,189,248,0.15);
+      --border-hi: rgba(56,189,248,0.45);
+      --cyan: #38bdf8;
+      --cyan-dim: #1e6a8a;
+      --text: #cdd9e8;
+      --text-dim: #5a7390;
+      --text-hi: #eef6ff;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --radius: 18px;
+      --radius-lg: 28px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg0);
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(56,189,248,0.08) 0%, transparent 70%),
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(56,189,248,0.03) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(56,189,248,0.03) 40px);
+      font-family: var(--sans);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, #0a3a52, #154e6e);
+      border: 1px solid var(--cyan-dim);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .logo-text h1 {
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 2px;
+    }
+
+    .logo-text small {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: #22c55e;
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.2);
+      padding: 0.35rem 0.9rem;
+      border-radius: 30px;
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── MAIN GRID ── */
+    .main-grid {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 1.5rem;
+    }
+
+    /* ── PANELS ── */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-title::before {
+      content: '';
+      display: block;
+      width: 3px; height: 14px;
+      background: var(--cyan);
+      border-radius: 2px;
+    }
+
+    /* ── UPLOAD ZONE ── */
+    .drop-zone {
+      border: 2px dashed rgba(56,189,248,0.3);
+      border-radius: var(--radius);
+      padding: 2rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(56,189,248,0.02);
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--cyan);
+      background: rgba(56,189,248,0.06);
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    }
+
+    .drop-icon { font-size: 2.2rem; margin-bottom: 0.6rem; }
+
+    .drop-text {
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .drop-hint {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      margin-top: 0.4rem;
+      font-family: var(--mono);
+    }
+
+    /* ── FILE INFO ── */
+    .file-info-bar {
+      display: none;
+      align-items: center;
+      gap: 0.8rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.8rem;
+    }
+
+    .file-info-bar.visible { display: flex; }
+    .file-name-display { font-family: var(--mono); color: var(--text-hi); flex: 1; word-break: break-all; }
+    .file-size-display { color: var(--text-dim); white-space: nowrap; }
+
+    /* ── BUTTONS ── */
+    .btn-row { display: flex; gap: 0.8rem; }
+
+    .btn {
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 10px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-scan {
+      flex: 1;
+      background: linear-gradient(135deg, #0a3a52, #0f4d6e);
+      border: 1px solid var(--cyan-dim);
+      color: #a8e6ff;
+    }
+
+    .btn-scan:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0f4d6e, #1a6a90);
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+    }
+
+    .btn-scan:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-clear {
+      background: rgba(100, 20, 20, 0.4);
+      border: 1px solid rgba(200, 50, 50, 0.3);
+      color: #ffaaaa;
+    }
+
+    .btn-clear:hover { background: rgba(150, 30, 30, 0.6); }
+
+    /* ── RESULT PANEL (LEFT) ── */
+    .result-box {
+      margin-top: 1.2rem;
+      background: rgba(0,0,0,0.25);
+      border-radius: var(--radius);
+      padding: 1rem;
+      min-height: 120px;
+    }
+
+    .result-placeholder {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      padding: 1.5rem 0;
+      font-family: var(--mono);
+    }
+
+    /* ── RISK BADGE ── */
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .risk-CLEAN    { background: rgba(34,197,94,0.12);  border: 1px solid rgba(34,197,94,0.4);  color: #86efac; }
+    .risk-LOW      { background: rgba(132,204,22,0.12); border: 1px solid rgba(132,204,22,0.4); color: #bef264; }
+    .risk-MEDIUM   { background: rgba(234,179,8,0.12);  border: 1px solid rgba(234,179,8,0.4);  color: #fde047; }
+    .risk-HIGH     { background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.4); color: #fdba74; }
+    .risk-CRITICAL { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.4);  color: #fca5a5; }
+
+    .score-line {
+      font-size: 0.82rem;
+      margin: 0.3rem 0 0.8rem;
+    }
+
+    .score-bar-bg {
+      background: var(--bg1);
+      height: 6px;
+      border-radius: 4px;
+      margin: 0.5rem 0 1rem;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .recs-list { list-style: none; }
+
+    .recs-list li {
+      font-size: 0.78rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    /* ── RIGHT PANEL TABS ── */
+    .tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 0.35rem 0.9rem;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: rgba(56,189,248,0.1);
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── METRICS ROW ── */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .metric-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.8rem;
+      text-align: center;
+    }
+
+    .metric-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.3rem;
+    }
+
+    .metric-value {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    .metric-sub {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      margin-top: 0.1rem;
+    }
+
+    /* ── HASHES ── */
+    .hash-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .hash-item {
+      background: var(--bg2);
+      border-radius: 8px;
+      padding: 0.5rem 0.8rem;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+    }
+
+    .hash-label { color: var(--text-dim); margin-bottom: 0.15rem; }
+    .hash-value { color: #a8d8ff; word-break: break-all; }
+
+    /* ── SIGNATURES ── */
+    .sig-family {
+      margin-bottom: 0.8rem;
+    }
+
+    .sig-family-name {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .sig-hits { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+    .sig-hit {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #fca5a5;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    /* ── API LIST ── */
+    .api-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+    .api-tag {
+      background: rgba(249,115,22,0.1);
+      border: 1px solid rgba(249,115,22,0.25);
+      color: #fdba74;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    /* ── PE INFO ── */
+    .section-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.73rem;
+      font-family: var(--mono);
+    }
+
+    .section-table th {
+      text-align: left;
+      color: var(--text-dim);
+      font-size: 0.65rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 0.3rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-table td {
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    .entropy-hi { color: #f97316; }
+    .entropy-packed { color: #ef4444; }
+    .entropy-ok { color: #86efac; }
+
+    /* ── STRINGS TAB ── */
+    .strings-list {
+      max-height: 350px;
+      overflow-y: auto;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: #90b8d4;
+    }
+
+    .strings-list div {
+      padding: 0.2rem 0.4rem;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .strings-list div:hover { background: rgba(255,255,255,0.03); }
+
+    /* ── HISTORY ── */
+    .history-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .history-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+    }
+
+    .history-name { font-family: var(--mono); color: var(--text); }
+    .history-meta { display: flex; gap: 1rem; font-size: 0.68rem; color: var(--text-dim); }
+    .history-score { font-family: var(--mono); color: var(--cyan); }
+
+    /* ── PLACEHOLDER / EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 0;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    .empty-icon { font-size: 2.5rem; margin-bottom: 0.8rem; opacity: 0.5; }
+
+    /* ── SCANNING ANIMATION ── */
+    @keyframes scan-pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .scanning-state {
+      text-align: center;
+      padding: 2rem 0;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--cyan);
+      animation: scan-pulse 1s infinite;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 4px; }
+
+    /* ── ERROR ── */
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      font-size: 0.8rem;
+      margin-top: 0.8rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 2.5rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 800px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .metrics-row { grid-template-columns: repeat(3,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-icon">🛡️</div>
+    <div class="logo-text">
+      <h1>SHADOWANALYZER</h1>
+      <small>Static Malware Detection Engine v1.0</small>
+    </div>
+  </div>
+  <div class="header-status">
+    <div class="dot"></div>
+    ENGINE ONLINE
+  </div>
+</header>
+
+<!-- ══════════ MAIN GRID ══════════ -->
+<div class="main-grid">
+
+  <!-- ── LEFT: UPLOAD & RESULT ── -->
+  <div class="panel">
+    <div class="panel-title">Target Sample</div>
+
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" />
+      <div class="drop-icon">📂</div>
+      <div class="drop-text">Arraste ou clique para selecionar</div>
+      <div class="drop-hint">EXE · DLL · PDF · JS · ZIP · DOCM · ELF · APK</div>
+    </div>
+
+    <div class="file-info-bar" id="fileInfoBar">
+      <span>📄</span>
+      <span class="file-name-display" id="fileNameDisplay">—</span>
+      <span class="file-size-display" id="fileSizeDisplay">—</span>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-scan" id="analyzeBtn" disabled>🚀 INICIAR SCAN</button>
+      <button class="btn btn-clear" id="clearBtn">✕</button>
+    </div>
+
+    <div class="result-box" id="resultBox">
+      <div class="result-placeholder">Nenhuma análise realizada.<br>Envie um arquivo suspeito.</div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT: INTELLIGENCE ── -->
+  <div class="panel">
+    <div class="panel-title">Threat Intelligence</div>
+
+    <!-- Métricas -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label">Risk Score</div>
+        <div class="metric-value" id="mScore">—</div>
+        <div class="metric-sub">/ 100</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Entropia</div>
+        <div class="metric-value" id="mEntropy">—</div>
+        <div class="metric-sub">bits</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">APIs Suspeitas</div>
+        <div class="metric-value" id="mApis">—</div>
+        <div class="metric-sub">detectadas</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="signatures">Assinaturas</button>
+      <button class="tab-btn" data-tab="pe">PE / ELF</button>
+      <button class="tab-btn" data-tab="strings">Strings</button>
+      <button class="tab-btn" data-tab="history">Histórico</button>
+    </div>
+
+    <!-- Tab: Overview -->
+    <div class="tab-content active" id="tab-overview">
+      <div class="empty-state" id="overviewEmpty">
+        <div class="empty-icon">🔬</div>
+        Aguardando análise...
+      </div>
+      <div id="overviewContent" style="display:none;">
+        <div class="hash-row" id="hashRow"></div>
+        <div id="fileTypeLine" style="font-size:0.8rem; margin-bottom:0.8rem;"></div>
+        <div id="packerLine"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Assinaturas -->
+    <div class="tab-content" id="tab-signatures">
+      <div class="empty-state" id="sigsEmpty">
+        <div class="empty-icon">📜</div>
+        Nenhuma assinatura detectada ainda.
+      </div>
+      <div id="sigsContent"></div>
+    </div>
+
+    <!-- Tab: PE / ELF -->
+    <div class="tab-content" id="tab-pe">
+      <div class="empty-state" id="peEmpty">
+        <div class="empty-icon">🗂️</div>
+        Disponível após análise de EXE/DLL/ELF.
+      </div>
+      <div id="peContent"></div>
+    </div>
+
+    <!-- Tab: Strings -->
+    <div class="tab-content" id="tab-strings">
+      <div class="empty-state" id="stringsEmpty">
+        <div class="empty-icon">🔤</div>
+        Nenhuma string extraída ainda.
+      </div>
+      <div id="stringsContent" class="strings-list" style="display:none;"></div>
+    </div>
+
+    <!-- Tab: Histórico -->
+    <div class="tab-content" id="tab-history">
+      <div class="empty-state" id="historyEmpty">
+        <div class="empty-icon">🕒</div>
+        Nenhuma análise no histórico.
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+</div>
+
+<footer>⚡ Análise estática local · Entropia de Shannon · Heurísticas PE/ELF · Strings suspeitas</footer>
+
+<script>
+  // ─── estado ───
+  let currentFile = null;
+  let history = [];
+
+  // ─── DOM ───
+  const dropZone    = document.getElementById('dropZone');
+  const fileInput   = document.getElementById('fileInput');
+  const fileInfoBar = document.getElementById('fileInfoBar');
+  const fileNameDisplay = document.getElementById('fileNameDisplay');
+  const fileSizeDisplay = document.getElementById('fileSizeDisplay');
+  const analyzeBtn  = document.getElementById('analyzeBtn');
+  const clearBtn    = document.getElementById('clearBtn');
+  const resultBox   = document.getElementById('resultBox');
+
+  // métricas
+  const mScore   = document.getElementById('mScore');
+  const mEntropy = document.getElementById('mEntropy');
+  const mApis    = document.getElementById('mApis');
+
+  // tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ─── upload ───
+  function formatBytes(b) {
+    if (!b) return '0 B';
+    const k = 1024, sizes = ['B','KB','MB','GB'];
+    const i = Math.floor(Math.log(b) / Math.log(k));
+    return (b / Math.pow(k,i)).toFixed(1) + ' ' + sizes[i];
+  }
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+  function handleFile(file) {
+    currentFile = file;
+    fileNameDisplay.textContent = file.name;
+    fileSizeDisplay.textContent = formatBytes(file.size);
+    fileInfoBar.classList.add('visible');
+    analyzeBtn.disabled = false;
+    resetDisplay();
+  }
+
+  clearBtn.addEventListener('click', () => {
+    currentFile = null;
+    fileInput.value = '';
+    fileInfoBar.classList.remove('visible');
+    analyzeBtn.disabled = true;
+    resetDisplay();
+    resultBox.innerHTML = '<div class="result-placeholder">Arquivo removido.</div>';
+  });
+
+  function resetDisplay() {
+    mScore.textContent = '—'; mEntropy.textContent = '—'; mApis.textContent = '—';
+    resultBox.innerHTML = '<div class="result-placeholder">Aguardando análise...</div>';
+    document.getElementById('overviewEmpty').style.display = 'block';
+    document.getElementById('overviewContent').style.display = 'none';
+    document.getElementById('sigsEmpty').style.display = 'block';
+    document.getElementById('sigsContent').innerHTML = '';
+    document.getElementById('peEmpty').style.display = 'block';
+    document.getElementById('peContent').innerHTML = '';
+    document.getElementById('stringsEmpty').style.display = 'block';
+    document.getElementById('stringsContent').style.display = 'none';
+    document.getElementById('stringsContent').innerHTML = '';
+  }
+
+  // ─── análise ───
+  analyzeBtn.addEventListener('click', async () => {
+    if (!currentFile) return;
+
+    analyzeBtn.disabled = true;
+    resultBox.innerHTML = '<div class="scanning-state">🔬 ANALISANDO...<br><span style="font-size:0.65rem;opacity:0.7">verificando entropia · strings · headers</span></div>';
+    mScore.textContent = '⏳'; mEntropy.textContent = '...'; mApis.textContent = '...';
+
+    const formData = new FormData();
+    formData.append('file', currentFile);
+
+    try {
+      const resp = await fetch('/analyze', { method: 'POST', body: formData });
+      const data = await resp.json();
+
+      if (data.error) {
+        resultBox.innerHTML = `<div class="error-msg">❌ ${data.error}</div>`;
+        analyzeBtn.disabled = false;
+        return;
+      }
+
+      renderResult(data);
+      addHistory(data);
+    } catch (err) {
+      resultBox.innerHTML = `<div class="error-msg">❌ Erro de conexão com o servidor.</div>`;
+    }
+
+    analyzeBtn.disabled = false;
+  });
+
+  // ─── render ───
+  function renderResult(d) {
+    // Métricas
+    mScore.textContent   = d.yara_score;
+    mEntropy.textContent = d.entropy;
+    mApis.textContent    = d.high_risk_apis.length;
+
+    // Score bar color
+    const barColor = { CLEAN:'#22c55e', LOW:'#84cc16', MEDIUM:'#eab308', HIGH:'#f97316', CRITICAL:'#ef4444' }[d.risk_level] || '#38bdf8';
+
+    // Painel esquerdo - resultado
+    resultBox.innerHTML = `
+      <div class="risk-badge risk-${d.risk_level}">${riskIcon(d.risk_level)} ${d.risk_level}</div>
+      <div class="score-line">Score: <strong style="color:${barColor}">${d.yara_score}/100</strong></div>
+      <div class="score-bar-bg"><div class="score-bar-fill" style="width:${d.yara_score}%;background:${barColor}"></div></div>
+      <ul class="recs-list">${d.recommendations.map(r => `<li>${r}</li>`).join('')}</ul>
+    `;
+
+    // ── Tab Overview ──
+    document.getElementById('overviewEmpty').style.display = 'none';
+    document.getElementById('overviewContent').style.display = 'block';
+    document.getElementById('hashRow').innerHTML = `
+      <div class="hash-item"><div class="hash-label">MD5</div><div class="hash-value">${d.md5}</div></div>
+      <div class="hash-item"><div class="hash-label">SHA-256</div><div class="hash-value">${d.sha256}</div></div>
+    `;
+    document.getElementById('fileTypeLine').innerHTML =
+      `<span style="color:var(--text-dim)">Tipo:</span> <span style="font-family:var(--mono);color:var(--cyan)">${d.file_type}</span>
+       &nbsp;|&nbsp; <span style="color:var(--text-dim)">Entropia:</span> <span style="font-family:var(--mono);color:${entropyColor(d.entropy_flag)}">${d.entropy} (${d.entropy_flag})</span>`;
+
+    document.getElementById('packerLine').innerHTML = d.packer_detected
+      ? `<div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:0.5rem 0.8rem;font-size:0.78rem;color:#fdba74;margin-top:0.5rem;">📦 Packer detectado: <strong>${d.packer_detected}</strong></div>`
+      : '';
+
+    // ── Tab Assinaturas ──
+    const sigsEl = document.getElementById('sigsContent');
+    const hasSigs = Object.keys(d.suspicious_strings).length > 0 || d.high_risk_apis.length > 0;
+    document.getElementById('sigsEmpty').style.display = hasSigs ? 'none' : 'block';
+
+    let sigsHtml = '';
+    for (const [family, hits] of Object.entries(d.suspicious_strings)) {
+      sigsHtml += `
+        <div class="sig-family">
+          <div class="sig-family-name" style="color:#f87171">⚠ ${family}</div>
+          <div class="sig-hits">${hits.map(h => `<span class="sig-hit">${esc(h)}</span>`).join('')}</div>
+        </div>`;
+    }
+    if (d.high_risk_apis.length) {
+      sigsHtml += `
+        <div class="sig-family">
+          <div class="sig-family-name" style="color:#fb923c">⚡ High-Risk APIs</div>
+          <div class="api-list">${d.high_risk_apis.map(a => `<span class="api-tag">${esc(a)}</span>`).join('')}</div>
+        </div>`;
+    }
+    sigsEl.innerHTML = sigsHtml;
+
+    // ── Tab PE/ELF ──
+    const peEl = document.getElementById('peContent');
+    if (d.pe_info && d.pe_info.sections && d.pe_info.sections.length) {
+      document.getElementById('peEmpty').style.display = 'none';
+      let peHtml = `<p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:0.6rem">Tipo: ${d.pe_info.is_dll ? 'DLL' : 'EXE'} &nbsp;·&nbsp; Arch: ${d.pe_info.machine}</p>
+        <p style="font-size:0.72rem;font-family:var(--mono);color:var(--text-dim);margin-bottom:0.4rem">SEÇÕES</p>
+        <table class="section-table">
+          <thead><tr><th>Nome</th><th>V.Size</th><th>R.Size</th><th>Entropia</th></tr></thead>
+          <tbody>`;
+      for (const s of d.pe_info.sections) {
+        const ec = s.entropy_flag === 'packed' ? 'entropy-packed' : s.entropy_flag === 'high' ? 'entropy-hi' : 'entropy-ok';
+        peHtml += `<tr>
+          <td>${esc(s.name)}</td>
+          <td>${s.virtual_size}</td>
+          <td>${s.raw_size}</td>
+          <td class="${ec}">${s.entropy}</td>
+        </tr>`;
+      }
+      peHtml += `</tbody></table>`;
+
+      if (d.pe_info.imports && d.pe_info.imports.length) {
+        peHtml += `<p style="font-size:0.72rem;font-family:var(--mono);color:var(--text-dim);margin:0.8rem 0 0.4rem">IMPORTS</p>`;
+        for (const imp of d.pe_info.imports) {
+          peHtml += `<div style="margin-bottom:0.4rem;font-size:0.73rem;">
+            <span style="color:#7dd3fc;font-family:var(--mono)">${esc(imp.dll)}</span>
+            <span style="color:var(--text-dim)"> → ${imp.functions.slice(0,6).map(esc).join(', ')}${imp.functions.length > 6 ? ` +${imp.functions.length-6}` : ''}</span>
+          </div>`;
+        }
+      }
+      peEl.innerHTML = peHtml;
+    } else if (d.elf_info && d.elf_info.type) {
+      document.getElementById('peEmpty').style.display = 'none';
+      peEl.innerHTML = `<div style="font-size:0.8rem;">
+        <p><span style="color:var(--text-dim)">Tipo ELF:</span> ${esc(d.elf_info.type)}</p>
+        <p><span style="color:var(--text-dim)">Arquitetura:</span> ${esc(d.elf_info.machine)}</p>
+        <p><span style="color:var(--text-dim)">Classe:</span> ${esc(d.elf_info.class)}</p>
+      </div>`;
+    }
+
+    // ── Tab Strings ──
+    if (d.strings_printable && d.strings_printable.length) {
+      document.getElementById('stringsEmpty').style.display = 'none';
+      const strEl = document.getElementById('stringsContent');
+      strEl.style.display = 'block';
+      strEl.innerHTML = d.strings_printable.map(s => `<div>${esc(s)}</div>`).join('');
+    }
+  }
+
+  // ─── histórico ───
+  function addHistory(d) {
+    history.unshift({
+      name: d.file_name,
+      score: d.yara_score,
+      risk: d.risk_level,
+      size: formatBytes(d.file_size),
+      time: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})
+    });
+    if (history.length > 10) history.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const el = document.getElementById('historyList');
+    const empty = document.getElementById('historyEmpty');
+    if (!history.length) { empty.style.display='block'; el.innerHTML=''; return; }
+    empty.style.display = 'none';
+    el.innerHTML = history.map(h => `
+      <div class="history-item">
+        <div>
+          <div class="history-name">${riskIcon(h.risk)} ${esc(h.name.length > 40 ? h.name.slice(0,40)+'…' : h.name)}</div>
+          <div class="history-meta"><span>${h.size}</span><span>${h.time}</span></div>
+        </div>
+        <div class="history-score">${h.score}/100</div>
+      </div>
+    `).join('');
+  }
+
+  // ─── utils ───
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function riskIcon(r) {
+    return { CLEAN:'✅', LOW:'🟢', MEDIUM:'🟡', HIGH:'🟠', CRITICAL:'🔴' }[r] || '⚪';
+  }
+
+  function entropyColor(flag) {
+    return { normal:'#86efac', high:'#fde047', packed:'#f97316' }[flag] || '#cdd9e8';
+  }
+</script>
+</body>
+</html>
