@@ -1,88 +1,85 @@
-import sqlite3
-from contextlib import contextmanager
-from datetime import datetime
+from sqlmodel import SQLModel, Field, Session, create_engine, Relationship, select
+from typing import Optional, List
+from datetime import datetime, timezone
+import os
+from dotenv import load_dotenv
 
-DATABASE_PATH = "database/crypto.db"
+load_dotenv()
 
-@contextmanager
-def get_db():
-    conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row
-    try:
-        yield conn
-        conn.commit()
-    finally:
-        conn.close()
+# Configuração do banco
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://crypto_user:crypto_pass_2024@localhost:5432/crypto_db")
+
+engine = create_engine(DATABASE_URL, echo=True)
+
+# ========== MODELS ==========
+class User(SQLModel, table=True):
+    __tablename__ = "users"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    username: str = Field(unique=True, index=True)
+    password_hash: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
+    # Relacionamento com vault
+    vault_items: List["Vault"] = Relationship(back_populates="user")
+
+class Vault(SQLModel, table=True):
+    __tablename__ = "vault"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id")
+    encrypted_message: str
+    key1: int
+    key2: int
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
+    # Relacionamento com user
+    user: User = Relationship(back_populates="vault_items")
 
 def init_db():
-    """Cria as tabelas do banco de dados"""
-    with get_db() as conn:
-        cursor = conn.cursor()
-        
-        # Tabela de usuários
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        
-        # Tabela do cofre (vault)
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS vault (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                encrypted_message TEXT NOT NULL,
-                key1 INTEGER NOT NULL,
-                key2 INTEGER NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-            )
-        """)
-        
-        print("✅ Database initialized successfully!")
+    """Cria as tabelas no banco"""
+    SQLModel.metadata.create_all(engine)
+    print("✅ Database initialized!")
 
-# Funções auxiliares
-def create_user(username: str, password_hash: str) -> int:
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO users (username, password_hash) VALUES (?, ?)",
-            (username, password_hash)
-        )
-        return cursor.lastrowid
+def get_session():
+    """Retorna uma sessão do banco"""
+    with Session(engine) as session:
+        yield session
 
-def get_user_by_username(username: str):
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-        return cursor.fetchone()
+# ========== CRUD OPERATIONS ==========
+def create_user(session: Session, username: str, password_hash: str) -> User:
+    user = User(username=username, password_hash=password_hash)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
 
-def save_to_vault(user_id: int, encrypted_message: str, key1: int, key2: int) -> int:
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO vault (user_id, encrypted_message, key1, key2) VALUES (?, ?, ?, ?)",
-            (user_id, encrypted_message, key1, key2)
-        )
-        return cursor.lastrowid
+def get_user_by_username(session: Session, username: str) -> Optional[User]:
+    statement = select(User).where(User.username == username)
+    return session.exec(statement).first()
 
-def get_user_vault(user_id: int):
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT id, encrypted_message, key1, key2, created_at FROM vault WHERE user_id = ? ORDER BY created_at DESC",
-            (user_id,)
-        )
-        return cursor.fetchall()
+def save_to_vault(session: Session, user_id: int, encrypted_message: str, key1: int, key2: int) -> Vault:
+    vault_item = Vault(
+        user_id=user_id,
+        encrypted_message=encrypted_message,
+        key1=key1,
+        key2=key2
+    )
+    session.add(vault_item)
+    session.commit()
+    session.refresh(vault_item)
+    return vault_item
 
-def delete_from_vault(message_id: int, user_id: int) -> bool:
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "DELETE FROM vault WHERE id = ? AND user_id = ?",
-            (message_id, user_id)
-        )
-        return cursor.rowcount > 0
+def get_user_vault(session: Session, user_id: int) -> List[Vault]:
+    statement = select(Vault).where(Vault.user_id == user_id).order_by(Vault.created_at.desc())
+    return session.exec(statement).all()
+
+def delete_from_vault(session: Session, message_id: int, user_id: int) -> bool:
+    statement = select(Vault).where(Vault.id == message_id, Vault.user_id == user_id)
+    vault_item = session.exec(statement).first()
+    
+    if vault_item:
+        session.delete(vault_item)
+        session.commit()
+        return True
+    return False
