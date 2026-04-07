@@ -1,74 +1,94 @@
-from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi import FastAPI, HTTPException, status, Depends, Response, Cookie
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from typing import List
+from typing import Optional, List
+from sqlmodel import Session
+from contextlib import asynccontextmanager
 import sys
 import os
 
-# Adiciona o diretório backend ao path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from cipher_engine import encrypt, decrypt
-from database import init_db, create_user, get_user_by_username, save_to_vault, get_user_vault, delete_from_vault
+from database import init_db, get_session, create_user, get_user_by_username, save_to_vault, get_user_vault, delete_from_vault
 from auth import hash_password, verify_password, create_access_token, decode_token
 from models import (
     UserRegister, UserLogin, EncryptRequest, DecryptRequest,
-    VaultAddRequest, VaultDeleteRequest, Token
+    VaultAddRequest, VaultDeleteRequest
 )
+
+# Lifespan para gerenciar recursos
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    init_db()
+    print("🚀 API started with PostgreSQL!")
+    yield
+    # Shutdown
+    print("👋 Shutting down...")
 
 app = FastAPI(
     title="Educational Crypto System API",
     description="Sistema de Criptografia Homofônica - Educacional",
-    version="1.0.0"
+    version="2.0.0",
+    lifespan=lifespan
 )
 
-# CORS para o frontend
+# CORS - Permitir cookies
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Em produção, especifique o domínio
-    allow_credentials=True,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_credentials=True,  # Importante para cookies!
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-security = HTTPBearer()
-
-# Inicializa o banco de dados na startup
-@app.on_event("startup")
-async def startup_event():
-    init_db()
-    print("🚀 API started!")
-
-# ========== UTILS ==========
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Obtém o usuário atual a partir do token"""
-    token = credentials.credentials
-    payload = decode_token(token)
+# ========== DEPENDÊNCIAS ==========
+def get_current_user(
+    response: Response,
+    session: Session = Depends(get_session),
+    access_token: Optional[str] = Cookie(None)
+):
+    """Obtém o usuário atual a partir do cookie HttpOnly"""
     
-    if not payload or "sub" not in payload:
+    if not access_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
+            detail="Not authenticated"
+        )
+    
+    payload = decode_token(access_token)
+    
+    if not payload or "sub" not in payload:
+        # Token inválido, limpar cookie
+        response.delete_cookie("access_token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
         )
     
     username = payload["sub"]
-    user = get_user_by_username(username)
+    user = get_user_by_username(session, username)
     
     if not user:
+        response.delete_cookie("access_token")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
+            detail="User not found"
         )
     
     return user
 
 # ========== ENDPOINTS PÚBLICOS ==========
-@app.post("/register", response_model=Token)
-async def register(user_data: UserRegister):
-    """Registra um novo usuário"""
+@app.post("/register")
+async def register(
+    user_data: UserRegister,
+    response: Response,
+    session: Session = Depends(get_session)
+):
+    """Registra um novo usuário e cria cookie de autenticação"""
+    
     # Verifica se usuário já existe
-    existing_user = get_user_by_username(user_data.username)
+    existing_user = get_user_by_username(session, user_data.username)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -77,39 +97,85 @@ async def register(user_data: UserRegister):
     
     # Cria o usuário
     password_hash = hash_password(user_data.password)
-    create_user(user_data.username, password_hash)
+    user = create_user(session, user_data.username, password_hash)
     
     # Cria token
-    access_token = create_access_token(data={"sub": user_data.username})
+    access_token = create_access_token(data={"sub": user.username})
+    
+    # Configura cookie HttpOnly
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=False,  # True em produção com HTTPS
+        samesite="lax",
+        max_age=60*60*24,  # 24 horas
+        path="/"
+    )
     
     return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "username": user_data.username
+        "success": True,
+        "username": user.username,
+        "message": "User registered successfully"
     }
 
-@app.post("/login", response_model=Token)
-async def login(user_data: UserLogin):
-    """Login do usuário"""
-    user = get_user_by_username(user_data.username)
+@app.post("/login")
+async def login(
+    user_data: UserLogin,
+    response: Response,
+    session: Session = Depends(get_session)
+):
+    """Login do usuário e criação de cookie"""
     
-    if not user or not verify_password(user_data.password, user["password_hash"]):
+    user = get_user_by_username(session, user_data.username)
+    
+    if not user or not verify_password(user_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password"
         )
     
-    access_token = create_access_token(data={"sub": user["username"]})
+    access_token = create_access_token(data={"sub": user.username})
+    
+    # Configura cookie HttpOnly
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=60*60*24,
+        path="/"
+    )
     
     return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "username": user["username"]
+        "success": True,
+        "username": user.username,
+        "message": "Login successful"
+    }
+
+@app.post("/logout")
+async def logout(response: Response):
+    """Logout - remove o cookie"""
+    response.delete_cookie("access_token")
+    return {"success": True, "message": "Logged out"}
+
+@app.get("/me")
+async def get_current_user_info(current_user = Depends(get_current_user)):
+    """Retorna informações do usuário logado"""
+    return {
+        "id": current_user.id,
+        "username": current_user.username,
+        "created_at": current_user.created_at.isoformat()
     }
 
 # ========== ENDPOINTS PROTEGIDOS ==========
 @app.post("/encrypt")
-async def encrypt_message(request: EncryptRequest, current_user = Depends(get_current_user)):
+async def encrypt_message(
+    request: EncryptRequest,
+    current_user = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
     """Criptografa uma mensagem"""
     try:
         if not (0 <= request.key1 <= 999) or not (0 <= request.key2 <= 999):
@@ -132,7 +198,10 @@ async def encrypt_message(request: EncryptRequest, current_user = Depends(get_cu
         )
 
 @app.post("/decrypt")
-async def decrypt_message(request: DecryptRequest, current_user = Depends(get_current_user)):
+async def decrypt_message(
+    request: DecryptRequest,
+    current_user = Depends(get_current_user)
+):
     """Descriptografa uma mensagem"""
     try:
         if not (0 <= request.key1 <= 999) or not (0 <= request.key2 <= 999):
@@ -155,29 +224,37 @@ async def decrypt_message(request: DecryptRequest, current_user = Depends(get_cu
         )
 
 @app.get("/vault")
-async def get_vault(current_user = Depends(get_current_user)):
+async def get_vault(
+    current_user = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
     """Lista todas as mensagens do cofre do usuário"""
-    messages = get_user_vault(current_user["id"])
+    messages = get_user_vault(session, current_user.id)
     
     return {
         "messages": [
             {
-                "id": msg["id"],
-                "encrypted_message": msg["encrypted_message"],
-                "key1": msg["key1"],
-                "key2": msg["key2"],
-                "created_at": msg["created_at"]
+                "id": msg.id,
+                "encrypted_message": msg.encrypted_message,
+                "key1": msg.key1,
+                "key2": msg.key2,
+                "created_at": msg.created_at.isoformat()
             }
             for msg in messages
         ]
     }
 
 @app.post("/vault/add")
-async def add_to_vault(request: VaultAddRequest, current_user = Depends(get_current_user)):
+async def add_to_vault(
+    request: VaultAddRequest,
+    current_user = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
     """Salva uma mensagem criptografada no cofre"""
     try:
-        message_id = save_to_vault(
-            current_user["id"],
+        vault_item = save_to_vault(
+            session,
+            current_user.id,
             request.encrypted_message,
             request.key1,
             request.key2
@@ -185,7 +262,7 @@ async def add_to_vault(request: VaultAddRequest, current_user = Depends(get_curr
         
         return {
             "success": True,
-            "message_id": message_id,
+            "message_id": vault_item.id,
             "message": "Message saved to vault"
         }
     except Exception as e:
@@ -194,10 +271,14 @@ async def add_to_vault(request: VaultAddRequest, current_user = Depends(get_curr
             detail=f"Error saving to vault: {str(e)}"
         )
 
-@app.delete("/vault/delete")
-async def delete_from_vault_endpoint(request: VaultDeleteRequest, current_user = Depends(get_current_user)):
+@app.delete("/vault/{message_id}")
+async def delete_from_vault_endpoint(
+    message_id: int,
+    current_user = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
     """Remove uma mensagem do cofre"""
-    deleted = delete_from_vault(request.message_id, current_user["id"])
+    deleted = delete_from_vault(session, message_id, current_user.id)
     
     if not deleted:
         raise HTTPException(
@@ -212,8 +293,7 @@ async def delete_from_vault_endpoint(request: VaultDeleteRequest, current_user =
 
 @app.get("/health")
 async def health_check():
-    """Verifica se a API está funcionando"""
-    return {"status": "healthy", "system": "Educational Crypto System"}
+    return {"status": "healthy", "system": "Educational Crypto System v2"}
 
 if __name__ == "__main__":
     import uvicorn
