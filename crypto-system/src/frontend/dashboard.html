@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CryptoSystem — Dashboard</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<div id="toast-container" class="toast-container"></div>
+
+<div class="dash-layout">
+
+  <!-- ── TOPBAR ── -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">⬡ CryptoSystem</div>
+      <span class="topbar-sep">|</span>
+      <div class="topbar-user">sistema homofônico</div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        sistema ativo
+      </div>
+    </div>
+  </header>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="dash-content">
+    
+    <!-- SIDEBAR NAV -->
+    <div class="sidebar">
+      <div class="sidebar-label">operação</div>
+      <button class="nav-item active" data-panel="encrypt">
+        <span class="nav-icon">🔒</span>
+        <span class="nav-label">Criptografar</span>
+        <span class="nav-key">E</span>
+      </button>
+      <button class="nav-item" data-panel="decrypt">
+        <span class="nav-icon">🔓</span>
+        <span class="nav-label">Descriptografar</span>
+        <span class="nav-key">D</span>
+      </button>
+      <button class="nav-item" data-panel="vault">
+        <span class="nav-icon">📦</span>
+        <span class="nav-label">Cofre</span>
+        <span class="nav-key">V</span>
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="nav-item" data-panel="tools">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Ferramentas</span>
+        <span class="nav-key">T</span>
+      </button>
+      <button class="nav-item" data-panel="info">
+        <span class="nav-icon">ℹ️</span>
+        <span class="nav-label">Informações</span>
+        <span class="nav-key">I</span>
+      </button>
+    </div>
+
+    <!-- PANELS -->
+    <div class="panel-area">
+      
+      <!-- PANEL: ENCRYPT -->
+      <div id="panel-encrypt" class="panel active">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">operação segura</div>
+            <div class="panel-heading">Criptografar mensagem</div>
+          </div>
+          <div class="panel-badge">homofônico • 5‑blocos</div>
+        </div>
+
+        <div class="crypto-grid">
+          <div class="form-group">
+            <label>📝 Texto original</label>
+            <textarea id="encrypt-text" class="form-control" rows="4" placeholder="Digite a mensagem que deseja proteger..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>🔐 Resultado criptografado</label>
+            <div class="output-box">
+              <div class="output-topbar">
+                <span class="output-label">CIFRA HOMOFÔNICA</span>
+                <button id="btn-copy-encrypt" class="btn-copy">copiar</button>
+              </div>
+              <div id="encrypt-output" class="output-placeholder">aguardando entrada...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-row">
+          <div class="key-field">
+            <label>KEY 1 (0–999)</label>
+            <input type="number" id="encrypt-key1" class="key-input" value="123" min="0" max="999">
+          </div>
+          <div class="key-field">
+            <label>KEY 2 (0–999)</label>
+            <input type="number" id="encrypt-key2" class="key-input" value="456" min="0" max="999">
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button id="btn-encrypt" class="btn-action">CRIPTOGRAFAR →</button>
+          <label class="save-vault-row">
+            <input type="checkbox" id="save-to-vault">
+            <span class="toggle"></span>
+            <span>salvar automaticamente no cofre</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- PANEL: DECRYPT -->
+      <div id="panel-decrypt" class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">operação reversa</div>
+            <div class="panel-heading">Descriptografar</div>
+          </div>
+          <div class="panel-badge">exige chaves corretas</div>
+        </div>
+
+        <div class="crypto-grid">
+          <div class="form-group">
+            <label>🔒 Cifra (S:...)</label>
+            <textarea id="decrypt-text" class="form-control" rows="4" placeholder="Cole a cifra que começa com S:..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>📄 Texto original</label>
+            <div class="output-box">
+              <div class="output-topbar">
+                <span class="output-label">TEXTO RECUPERADO</span>
+                <button id="btn-copy-decrypt" class="btn-copy">copiar</button>
+              </div>
+              <div id="decrypt-output" class="output-placeholder">aguardando cifra...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-row">
+          <div class="key-field">
+            <label>KEY 1 (0–999)</label>
+            <input type="number" id="decrypt-key1" class="key-input" value="123" min="0" max="999">
+          </div>
+          <div class="key-field">
+            <label>KEY 2 (0–999)</label>
+            <input type="number" id="decrypt-key2" class="key-input" value="456" min="0" max="999">
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button id="btn-decrypt" class="btn-action amber">DESCRIPTOGRAFAR →</button>
+        </div>
+      </div>
+
+      <!-- PANEL: VAULT -->
+      <div id="panel-vault" class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">armazenamento local</div>
+            <div class="panel-heading">Meu cofre</div>
+          </div>
+          <div class="panel-badge">persistente</div>
+        </div>
+        <div id="vault-list" class="vault-grid">
+          <div class="vault-empty">📭 carregando mensagens...</div>
+        </div>
+      </div>
+
+      <!-- PANEL: TOOLS -->
+      <div id="panel-tools" class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">análise e suporte</div>
+            <div class="panel-heading">Ferramentas</div>
+          </div>
+          <div class="panel-badge">diagnóstico</div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-label">verificador de colisões</div>
+            <div class="info-card-value amber">key1</div>
+            <div style="margin-top: 0.8rem;">
+              <input type="number" id="check-k1" class="form-control" placeholder="Key1 (0–999)" value="123" min="0" max="999">
+              <button id="btn-check" class="btn-action ghost" style="margin-top: 0.6rem; width: 100%;">verificar colisões</button>
+              <div id="collision-result" class="collision-result"></div>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">gerador de chaves</div>
+            <div class="info-card-value amber">random</div>
+            <div style="margin-top: 0.8rem;">
+              <button id="btn-gen-keys" class="btn-action ghost" style="width: 100%;">gerar par aleatório</button>
+              <div id="gen-keys-result" class="collision-result" style="display: none; margin-top: 0.6rem;">
+                <pre id="gen-keys-text" style="font-family: monospace; font-size: 0.7rem;"></pre>
+                <button id="btn-copy-keys" class="btn-copy" style="margin-top: 0.4rem;">copiar chaves</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL: INFO -->
+      <div id="panel-info" class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">documentação resumida</div>
+            <div class="panel-heading">Sistema Homofônico</div>
+          </div>
+          <div class="panel-badge">educacional</div>
+        </div>
+
+        <div class="chars-grid">
+          <div class="chars-section">
+            <div class="chars-section-title">📋 caracteres suportados (69)</div>
+            <div class="chars-row">
+              <span class="char-pill">a-z</span>
+              <span class="char-pill">A-Z</span>
+              <span class="char-pill">0-9</span>
+              <span class="char-pill">espaço</span>
+              <span class="char-pill">.</span>
+              <span class="char-pill">( )</span>
+              <span class="char-pill">"</span>
+              <span class="char-pill">!</span>
+              <span class="char-pill">?</span>
+            </div>
+          </div>
+          <div class="chars-section">
+            <div class="chars-section-title">🔄 normalizações</div>
+            <div class="chars-row">
+              <span class="char-pill">áàâãä → a</span>
+              <span class="char-pill">éèêë → e</span>
+              <span class="char-pill">íìîï → i</span>
+              <span class="char-pill">óòôõö → o</span>
+              <span class="char-pill">úùûü → u</span>
+              <span class="char-pill">ç → c</span>
+              <span class="char-pill">,;: → .</span>
+              <span class="char-pill">-_ → espaço</span>
+            </div>
+          </div>
+          <div class="chars-section">
+            <div class="chars-section-title">⚠️ limitações</div>
+            <div class="chars-row">
+              <span class="char-pill">não seguro para dados reais</span>
+              <span class="char-pill">chaves curtas (0-999)</span>
+              <span class="char-pill">vulnerável a brute force</span>
+              <span class="char-pill">apenas para estudos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
