@@ -149,27 +149,11 @@ Usar: Clique "🔓 Usar" para preencher automaticamente os campos
 
 Deletar: Remove permanentemente do vault
 
-### 4️⃣ Ferramentas
-Ferramenta	                      Função
-Verificador de Colisões	          Testa se uma KEY1 gera representações únicas
-Gerador de Chaves	                Cria pares de chaves aleatórias
 
 ### 📦 O Cofre (Vault)
 Como Funciona
 
-O cofre armazena suas mensagens criptografadas em um arquivo JSON local:
-{
-  "messages": [
-    {
-      "id": 1,
-      "encrypted_message": "S:8fK9mXpQ2...",
-      "key1": 123,
-      "key2": 456,
-      "created_at": "2024-01-15T10:30:00"
-    }
-  ],
-  "next_id": 2
-}
+O cofre armazena suas mensagens criptografadas em um arquivo JSON local
 
 # O arquivo fica em:
 ~/githubmeu/cybersecurity-portfolio-main/crypto-system/src/backend/vault.json
@@ -186,12 +170,12 @@ Tamanho por cifra: ~200-300 bytes
 
 Persistência: ✅ Sim (reinicializações)
 
-comandos úteis:
+### comandos úteis:
 # Ver quantidade de mensagens
 cat src/backend/vault.json | grep -c '"id"'
 
 # Limpar cofre
-rm src/backend/vault.json
+rm src/backend/vault.json ou o botão de delete na interface
 
 # Backup do cofre
 cp src/backend/vault.json vault-backup.json
@@ -236,13 +220,18 @@ Detecta versão do WebKit (4.0/4.1)
 # 📄 src/backend/main.py - Servidor FastAPI
 Endpoints:
 
-Método	Endpoint	  Função
-POST	  /encrypt	  Criptografa texto
-POST	  /decrypt	  Descriptografa
-GET	    /vault	    Lista mensagens
-POST	  /vault	    Salva mensagem
-DELETE	/vault/{id}	Remove mensagem
-GET	    /health	    Status do sistema
+
+POST - /encrypt	- Criptografa texto
+
+POST - /decrypt	- Descriptografa
+
+GET	- /vault - Lista mensagens
+
+POST - /vault - Salva mensagem
+
+DELETE - /vault/{id} - Remove mensagem
+
+GET	- /health	- Status do sistema
 
 # 📄 src/backend/cipher_engine.py - Motor de Criptografia
 Funções principais:
@@ -272,26 +261,10 @@ Como um Analista Poderia Quebrar Este Sistema?
 Este sistema é educacional e propositalmente frágil para demonstração de conceitos.
 
 # 1. Ataque de Força Bruta
-Chaves são apenas 0-999 (1.000 possibilidades)
-for key1 in range(1000):
-    for key2 in range(1000):
-        teste = decrypt(cifra, key1, key2)
-        if "palavra_esperada" in teste:
-            print(f"Chaves encontradas: {key1}, {key2}")
 
 # 2. Análise de Frequência
-Como a cifra é monoalfabética (cada caractere vira 5 fixos), é possível:
-
-Mapear blocos de 5 caracteres para letras
-
-Usar frequência de letras em português
-
 
 # 3. Padrões Detectáveis
-
-Cada caractere SEMPRE vira 5 caracteres
-
-Mesmo caractere vira MESMO bloco (com mesma key1)
 
 ### ⚠️ Conclusão
 Este sistema é excelente para aprendizado, mas NUNCA use em produção!
