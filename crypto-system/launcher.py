@@ -9,16 +9,32 @@ import subprocess
 import sys
 import os
 import signal
-import threading
 import time
 import atexit
 
-# Tenta importar GTK, se falhar mostra instrução
+# Tenta importar GTK com detecção automática da versão do WebKit
 try:
     import gi
     gi.require_version('Gtk', '3.0')
-    gi.require_version('WebKit2', '4.0')
+    
+    # Tenta diferentes versões do WebKit (Fedora usa 4.1, Ubuntu 4.0)
+    webkit_versions = ['4.1', '4.0']
+    webkit_version = None
+    
+    for version in webkit_versions:
+        try:
+            gi.require_version('WebKit2', version)
+            webkit_version = version
+            break
+        except ValueError:
+            continue
+    
+    if not webkit_version:
+        raise ValueError("WebKit2 não encontrado (tentado 4.1 e 4.0)")
+    
     from gi.repository import Gtk, GLib, WebKit2
+    print(f"✅ Usando WebKit2 versão {webkit_version}")
+    
 except ImportError as e:
     print("❌ Dependências GTK não encontradas!")
     print()
@@ -26,7 +42,7 @@ except ImportError as e:
     print("  sudo apt install python3-gi gir1.2-webkit2-4.0")
     print()
     print("Para instalar no Fedora/Nobara:")
-    print("  sudo dnf install python3-gobject webkit2gtk4.0")
+    print("  sudo dnf install python3-gobject webkit2gtk4.1")
     print()
     print("Depois rode: pip install PyGObject")
     sys.exit(1)
