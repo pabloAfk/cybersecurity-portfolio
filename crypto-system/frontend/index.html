@@ -26,4 +26,42 @@
     <!-- LOGIN -->
     <form id="form-login" class="auth-form active" autocomplete="off">
       <div>
-	<label class="field-label" for="login-user">Usuário</label>
+        <label class="field-label" for="login-user">Usuário</label>
+        <input type="text" id="login-user" class="field-input" placeholder="codinome" autocomplete="off"/>
+      </div>
+      <div>
+        <label class="field-label" for="login-pass">Senha</label>
+        <input type="password" id="login-pass" class="field-input" placeholder="••••••" autocomplete="off"/>
+      </div>
+      <button type="submit" id="btn-login" class="btn-primary">AUTENTICAR →</button>
+      <div id="login-msg" class="auth-msg"></div>
+    </form>
+
+    <!-- REGISTER -->
+    <form id="form-register" class="auth-form" autocomplete="off">
+      <div>
+        <label class="field-label" for="reg-user">Usuário</label>
+        <input type="text" id="reg-user" class="field-input" placeholder="mínimo 3 caracteres" autocomplete="off"/>
+      </div>
+      <div>
+        <label class="field-label" for="reg-pass">Senha</label>
+        <input type="password" id="reg-pass" class="field-input" placeholder="mínimo 6 caracteres" autocomplete="off"/>
+      </div>
+      <div>
+        <label class="field-label" for="reg-pass2">Confirmar senha</label>
+        <input type="password" id="reg-pass2" class="field-input" placeholder="digite novamente" autocomplete="off"/>
+      </div>
+      <button type="submit" id="btn-register" class="btn-primary">CRIAR CONTA →</button>
+      <div id="reg-msg" class="auth-msg"></div>
+    </form>
+  </div>
+
+  <div class="auth-footer">
+    ⚡ sistema educacional · não armazenamos dados reais
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="module" src="js/auth.js"></script>
+</body>
+</html>
