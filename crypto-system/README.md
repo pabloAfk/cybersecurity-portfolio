@@ -193,7 +193,7 @@ cp src/backend/vault.json vault-backup.json
 
 
 ### 🛠️ Scripts e Componentes
-📄 start.sh - Ponto de Entrada
+# 📄 start.sh - Ponto de Entrada
 O que faz:
 
 Verifica se o sistema está instalado
@@ -204,7 +204,7 @@ Ativa ambiente virtual
 
 Tenta launcher.py (GTK), fallback para launcher_simple.py
 
-📄 scripts/install.sh - Instalador
+# 📄 scripts/install.sh - Instalador
 Etapas:
 
 Detecta gerenciador de pacotes (dnf/apt/pacman)
@@ -217,7 +217,7 @@ Instala dependências Python (FastAPI, PyGObject, etc)
 
 Cria atalho no menu de aplicações
 
-📄 scripts/launcher.py - App GTK
+# 📄 scripts/launcher.py - App GTK
 Características:
 
 Janela nativa com GTK/WebKit
@@ -228,7 +228,7 @@ Inicia backend automaticamente
 
 Detecta versão do WebKit (4.0/4.1)
 
-📄 src/backend/main.py - Servidor FastAPI
+# 📄 src/backend/main.py - Servidor FastAPI
 Endpoints:
 
 Método	Endpoint	  Função
@@ -239,7 +239,7 @@ POST	  /vault	    Salva mensagem
 DELETE	/vault/{id}	Remove mensagem
 GET	    /health	    Status do sistema
 
-📄 src/backend/cipher_engine.py - Motor de Criptografia
+# 📄 src/backend/cipher_engine.py - Motor de Criptografia
 Funções principais:
 def encrypt(texto: str, key1: int, key2: int) -> str
 def decrypt(cifra: str, key1: int, key2: int) -> str
@@ -253,7 +253,7 @@ Normalização de acentos e pontuação
 
 Suporte a 69 caracteres
 
-📄 src/backend/database.py - Gerenciador do Vault
+# 📄 src/backend/database.py - Gerenciador do Vault
 Funções:
 
 load_vault() / save_vault() - Persistência JSON
