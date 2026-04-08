@@ -43,7 +43,7 @@ pip install -r requirements.txt
 # 3. Rode o backend
 cd backend
 python main.py
-``
+```
 🔐 Como funciona a criptografia
 Homofônica: Cada caractere vira 5 caracteres aleatórios
 
