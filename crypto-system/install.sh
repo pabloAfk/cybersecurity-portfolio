@@ -1,10 +1,10 @@
 #!/bin/bash
 # ============================================
 # CryptoSystem - Instalador para Linux
-# Cria ambiente virtual e atalho desktop
+# Detecta automaticamente apt/dnf/pacman/zypper
 # ============================================
 
-set -e  # Para o script se algum comando falhar
+set -e
 
 echo "╔════════════════════════════════════════════════╗"
 echo "║   CryptoSystem - Instalador                   ║"
@@ -16,75 +16,179 @@ echo ""
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# Detecta o gerenciador de pacotes
+detect_package_manager() {
+    if command -v dnf &> /dev/null; then
+        echo "dnf"
+    elif command -v apt &> /dev/null; then
+        echo "apt"
+    elif command -v pacman &> /dev/null; then
+        echo "pacman"
+    elif command -v zypper &> /dev/null; then
+        echo "zypper"
+    else
+        echo "unknown"
+    fi
+}
+
+PKG_MANAGER=$(detect_package_manager)
+echo "📦 Gerenciador de pacotes detectado: $PKG_MANAGER"
+echo ""
+
+# Instala dependências do sistema baseado no gerenciador
+install_system_deps() {
+    echo "🔧 Instalando dependências do sistema..."
+    
+    case $PKG_MANAGER in
+        dnf)
+            # Fedora / Nobara / RHEL
+            echo "   Usando dnf (Fedora/Nobara)..."
+            sudo dnf install -y \
+                python3-pip \
+                python3-devel \
+                python3-gobject \
+                python3-gobject-devel \
+                webkit2gtk4.0 \
+                webkit2gtk4.0-devel \
+                gtk3 \
+                gtk3-devel \
+                cairo \
+                cairo-devel \
+                gobject-introspection \
+                gobject-introspection-devel \
+                pkg-config \
+                gcc \
+                redhat-rpm-config \
+                libffi-devel
+            ;;
+        apt)
+            # Debian / Ubuntu / Mint
+            echo "   Usando apt (Debian/Ubuntu)..."
+            sudo apt update
+            sudo apt install -y \
+                python3-pip \
+                python3-dev \
+                python3-gi \
+                python3-gi-cairo \
+                gir1.2-gtk-3.0 \
+                gir1.2-webkit2-4.0 \
+                libcairo2-dev \
+                libgirepository1.0-dev \
+                libffi-dev \
+                pkg-config \
+                gcc \
+                build-essential
+            ;;
+        pacman)
+            # Arch Linux / Manjaro
+            echo "   Usando pacman (Arch/Manjaro)..."
+            sudo pacman -S --noconfirm \
+                python-pip \
+                python-gobject \
+                webkit2gtk \
+                gtk3 \
+                cairo \
+                gobject-introspection \
+                pkg-config \
+                gcc
+            ;;
+        zypper)
+            # openSUSE
+            echo "   Usando zypper (openSUSE)..."
+            sudo zypper install -y \
+                python3-pip \
+                python3-devel \
+                python3-gobject \
+                webkit2gtk3 \
+                gtk3 \
+                cairo-devel \
+                gobject-introspection-devel \
+                pkg-config \
+                gcc
+            ;;
+        *)
+            echo "❌ Gerenciador de pacotes não reconhecido!"
+            echo ""
+            echo "Por favor, instale manualmente:"
+            echo "  - Python 3.9+"
+            echo "  - GTK3 e desenvolvimento"
+            echo "  - WebKit2GTK"
+            echo "  - Cairo"
+            echo "  - GObject Introspection"
+            exit 1
+            ;;
+    esac
+}
+
+# Verifica se já tem as dependências
+check_system_deps() {
+    echo ""
+    echo "🔍 Verificando dependências do sistema..."
+    
+    MISSING=0
+    
+    if ! pkg-config --exists cairo 2>/dev/null; then
+        echo "   ❌ Cairo não encontrado"
+        MISSING=1
+    else
+        echo "   ✅ Cairo encontrado"
+    fi
+    
+    if ! pkg-config --exists gtk+-3.0 2>/dev/null; then
+        echo "   ❌ GTK+3 não encontrado"
+        MISSING=1
+    else
+        echo "   ✅ GTK+3 encontrado"
+    fi
+    
+    if ! pkg-config --exists webkit2gtk-4.0 2>/dev/null; then
+        echo "   ❌ WebKit2GTK não encontrado"
+        MISSING=1
+    else
+        echo "   ✅ WebKit2GTK encontrado"
+    fi
+    
+    if [ $MISSING -eq 1 ]; then
+        echo ""
+        echo "⚠️  Dependências faltando. Instalando..."
+        install_system_deps
+    else
+        echo "   ✅ Todas as dependências estão ok!"
+    fi
+}
+
+# Executa verificação de dependências do sistema
+check_system_deps
+
 # Verifica Python
 if ! command -v python3 &> /dev/null; then
     echo "❌ Python3 não encontrado!"
-    echo "   Instale: sudo apt install python3 (Ubuntu/Debian)"
-    echo "   ou: sudo dnf install python3 (Fedora/Nobara)"
     exit 1
 fi
-
 echo "✅ Python3 encontrado: $(python3 --version)"
-
-# Verifica dependências GTK
-echo ""
-echo "📦 Verificando dependências GTK..."
-
-MISSING_DEPS=""
-
-if ! python3 -c "import gi" 2>/dev/null; then
-    MISSING_DEPS="$MISSING_DEPS python3-gi"
-fi
-
-if ! python3 -c "from gi.repository import WebKit2" 2>/dev/null; then
-    MISSING_DEPS="$MISSING_DEPS gir1.2-webkit2-4.0"
-fi
-
-if [ -n "$MISSING_DEPS" ]; then
-    echo "⚠️  Dependências GTK faltando: $MISSING_DEPS"
-    echo ""
-    echo "Para instalar no Ubuntu/Debian:"
-    echo "  sudo apt install python3-gi gir1.2-webkit2-4.0"
-    echo ""
-    echo "Para instalar no Fedora/Nobara:"
-    echo "  sudo dnf install python3-gobject webkit2gtk4.0"
-    echo ""
-    read -p "Deseja instalar automaticamente? (s/N): " -n 1 -r
-    echo ""
-    if [[ $REPLY =~ ^[Ss]$ ]]; then
-        if command -v apt &> /dev/null; then
-            sudo apt update
-            sudo apt install -y python3-gi gir1.2-webkit2-4.0
-        elif command -v dnf &> /dev/null; then
-            sudo dnf install -y python3-gobject webkit2gtk4.0
-        else
-            echo "❌ Não foi possível instalar automaticamente. Instale manualmente."
-            exit 1
-        fi
-    else
-        echo "❌ Instalação cancelada. Instale as dependências manualmente."
-        exit 1
-    fi
-fi
 
 # Cria ambiente virtual
 echo ""
 echo "🐍 Criando ambiente virtual..."
 if [ -d "venv" ]; then
-    echo "   Ambiente virtual já existe. Removendo..."
+    echo "   Removendo ambiente virtual antigo..."
     rm -rf venv
 fi
 
 python3 -m venv venv
 source venv/bin/activate
 
-# Instala dependências Python
+# Atualiza pip
+pip install --upgrade pip
+
+# Instala dependências Python do requirements.txt
 echo ""
 echo "📦 Instalando dependências Python..."
-pip install --upgrade pip
 pip install -r requirements.txt
 
-# Instala PyGObject no venv
+# Instala PyGObject (agora com as dependências do sistema já instaladas)
+echo ""
+echo "📦 Instalando PyGObject (binding GTK para Python)..."
 pip install PyGObject
 
 # Verifica se backend/main.py existe
@@ -129,7 +233,6 @@ echo "🚀 Para iniciar:"
 echo ""
 echo "   1. Pelo menu de aplicações: 'CryptoSystem'"
 echo "   2. Pelo terminal: ./launcher.py"
-echo "   3. Pelo atalho na área de trabalho (se copiado)"
 echo ""
 echo "📂 Diretório de instalação: $SCRIPT_DIR"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
