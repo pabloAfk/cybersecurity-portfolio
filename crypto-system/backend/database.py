@@ -1,89 +1,103 @@
-from sqlmodel import SQLModel, Field, Session, create_engine, Relationship, select
-from typing import Optional, List
-from datetime import datetime, timezone
+import json
 import os
-from dotenv import load_dotenv
+from datetime import datetime, timezone
+from typing import List, Optional, Dict
 
-load_dotenv()
+# Arquivo para armazenar os dados
+DATA_FILE = "data.json"
 
-# Usando SQLite (mais fácil para começar)
-DATABASE_URL = "sqlite:///../database/crypto.db"
+def load_data() -> Dict:
+    """Carrega dados do arquivo JSON"""
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r') as f:
+            return json.load(f)
+    return {"users": [], "vault": [], "next_user_id": 1, "next_vault_id": 1}
 
-# Engine para SQLite
-engine = create_engine(
-    DATABASE_URL, 
-    connect_args={"check_same_thread": False}
-)
+def save_data(data: Dict):
+    """Salva dados no arquivo JSON"""
+    with open(DATA_FILE, 'w') as f:
+        json.dump(data, f, indent=2, default=str)
 
-# ========== MODELS ==========
-class User(SQLModel, table=True):
-    __tablename__ = "users"
+# ========== USER FUNCTIONS ==========
+def create_user(username: str, password_hash: str) -> Optional[Dict]:
+    data = load_data()
     
-    id: Optional[int] = Field(default=None, primary_key=True)  # ✅ Anotação explícita
-    username: str = Field(unique=True, index=True)
-    password_hash: str
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    # Verifica se usuário existe
+    for user in data["users"]:
+        if user["username"] == username:
+            return None
     
-    # Relacionamento com vault
-    vault_items: List["Vault"] = Relationship(back_populates="user")
-
-class Vault(SQLModel, table=True):
-    __tablename__ = "vault"
+    user = {
+        "id": data["next_user_id"],
+        "username": username,
+        "password_hash": password_hash,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
     
-    id: Optional[int] = Field(default=None, primary_key=True)  # ✅ Anotação explícita
-    user_id: int = Field(foreign_key="users.id")
-    encrypted_message: str
-    key1: int
-    key2: int
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    
-    # Relacionamento com user
-    user: User = Relationship(back_populates="vault_items")
-
-def init_db():
-    """Cria as tabelas no banco"""
-    os.makedirs("../database", exist_ok=True)
-    SQLModel.metadata.create_all(engine)
-    print("✅ Database initialized! (SQLite)")
-
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-# ========== CRUD OPERATIONS ==========
-def create_user(session: Session, username: str, password_hash: str) -> User:
-    user = User(username=username, password_hash=password_hash)
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+    data["users"].append(user)
+    data["next_user_id"] += 1
+    save_data(data)
     return user
 
-def get_user_by_username(session: Session, username: str) -> Optional[User]:
-    statement = select(User).where(User.username == username)
-    return session.exec(statement).first()
+def get_user_by_username(username: str) -> Optional[Dict]:
+    data = load_data()
+    for user in data["users"]:
+        if user["username"] == username:
+            return user
+    return None
 
-def save_to_vault(session: Session, user_id: int, encrypted_message: str, key1: int, key2: int) -> Vault:
-    vault_item = Vault(
-        user_id=user_id,
-        encrypted_message=encrypted_message,
-        key1=key1,
-        key2=key2
-    )
-    session.add(vault_item)
-    session.commit()
-    session.refresh(vault_item)
-    return vault_item
+def get_user_by_id(user_id: int) -> Optional[Dict]:
+    data = load_data()
+    for user in data["users"]:
+        if user["id"] == user_id:
+            return user
+    return None
 
-def get_user_vault(session: Session, user_id: int) -> List[Vault]:
-    statement = select(Vault).where(Vault.user_id == user_id).order_by(Vault.created_at.desc())
-    return session.exec(statement).all()
-
-def delete_from_vault(session: Session, message_id: int, user_id: int) -> bool:
-    statement = select(Vault).where(Vault.id == message_id, Vault.user_id == user_id)
-    vault_item = session.exec(statement).first()
+# ========== VAULT FUNCTIONS ==========
+def save_to_vault(user_id: int, encrypted_message: str, key1: int, key2: int) -> int:
+    data = load_data()
     
-    if vault_item:
-        session.delete(vault_item)
-        session.commit()
-        return True
+    vault_item = {
+        "id": data["next_vault_id"],
+        "user_id": user_id,
+        "encrypted_message": encrypted_message,
+        "key1": key1,
+        "key2": key2,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    data["vault"].append(vault_item)
+    data["next_vault_id"] += 1
+    save_data(data)
+    return vault_item["id"]
+
+def get_user_vault(user_id: int) -> List[Dict]:
+    data = load_data()
+    user_vault = [item for item in data["vault"] if item["user_id"] == user_id]
+    # Ordena por data decrescente
+    user_vault.sort(key=lambda x: x["created_at"], reverse=True)
+    return user_vault
+
+def delete_from_vault(message_id: int, user_id: int) -> bool:
+    data = load_data()
+    for i, item in enumerate(data["vault"]):
+        if item["id"] == message_id and item["user_id"] == user_id:
+            data["vault"].pop(i)
+            save_data(data)
+            return True
     return False
+
+def init_db():
+    """Inicializa o arquivo de dados"""
+    if not os.path.exists(DATA_FILE):
+        save_data({"users": [], "vault": [], "next_user_id": 1, "next_vault_id": 1})
+    print("✅ Database initialized! (JSON file mode)")
+
+def get_session():
+    """Mock session para compatibilidade (não usado)"""
+    class MockSession:
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+    return MockSession()
