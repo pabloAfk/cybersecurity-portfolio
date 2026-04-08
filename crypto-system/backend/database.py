@@ -6,10 +6,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configuração do banco
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://crypto_user:crypto_pass_2024@localhost:5432/crypto_db")
+# USANDO SQLITE (mais fácil para começar)
+DATABASE_URL = "sqlite:///../database/crypto.db"
 
-engine = create_engine(DATABASE_URL, echo=True)
+# Engine para SQLite
+engine = create_engine(
+    DATABASE_URL, 
+    connect_args={"check_same_thread": False}  # Necessário para SQLite
+)
 
 # ========== MODELS ==========
 class User(SQLModel, table=True):
@@ -20,7 +24,6 @@ class User(SQLModel, table=True):
     password_hash: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
-    # Relacionamento com vault
     vault_items: List["Vault"] = Relationship(back_populates="user")
 
 class Vault(SQLModel, table=True):
@@ -33,16 +36,16 @@ class Vault(SQLModel, table=True):
     key2: int
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
-    # Relacionamento com user
     user: User = Relationship(back_populates="vault_items")
 
 def init_db():
     """Cria as tabelas no banco"""
+    # Garante que o diretório database existe
+    os.makedirs("../database", exist_ok=True)
     SQLModel.metadata.create_all(engine)
-    print("✅ Database initialized!")
+    print("✅ Database initialized! (SQLite)")
 
 def get_session():
-    """Retorna uma sessão do banco"""
     with Session(engine) as session:
         yield session
 
