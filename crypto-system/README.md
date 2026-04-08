@@ -260,11 +260,11 @@ Auto-incremento de IDs
 Como um Analista Poderia Quebrar Este Sistema?
 Este sistema é educacional e propositalmente frágil para demonstração de conceitos.
 
-# 1. Ataque de Força Bruta
+## 1. Ataque de Força Bruta
 
-# 2. Análise de Frequência
+## 2. Análise de Frequência
 
-# 3. Padrões Detectáveis
+## 3. Padrões Detectáveis
 
 ### ⚠️ Conclusão
 Este sistema é excelente para aprendizado, mas NUNCA use em produção!
@@ -277,36 +277,6 @@ RSA-2048+ para cifragem assimétrica
 
 Argon2 para hash de senhas
 
-### 🔧 Desenvolvimento
-Rodar em Modo Desenvolvimento
-#Terminal 1 - Backend
-cd src/backend
-python main.py
-
-#Terminal 2 - Frontend (opcional, já serve via FastAPI)
-#Acesse http://localhost:8000
-
-### Debug do Launcher GTK
-#Rodar com saída de erro
-python scripts/launcher.py 2>&1 | tee debug.log
-
-#Verificar versão do WebKit
-python -c "from gi.repository import WebKit2; print(WebKit2.get_major_version())"
-
-### Testar API via cURL
-#Criptografar
-curl -X POST http://localhost:8000/encrypt \
-  -H "Content-Type: application/json" \
-  -d '{"text":"teste","key1":123,"key2":456}'
-
-#Descriptografar
-curl -X POST http://localhost:8000/decrypt \
-  -H "Content-Type: application/json" \
-  -d '{"ciphertext":"S:...","key1":123,"key2":456}'
-
-#Listar cofre
-curl http://localhost:8000/vault
-
 ### Adicionar Novas Funcionalidades
 Backend: Adicione rotas no main.py
 
@@ -318,9 +288,11 @@ Criptografia: Modifique cipher_engine.py
 
 ### 🗑️ Desinstalação
 cd crypto-system
+
 ./scripts/uninstall.sh
 
-# remove tudo:
+remove tudo:
+
 Ambiente virtual
 Atalho do menu
 Dados do cofre (opcional)
