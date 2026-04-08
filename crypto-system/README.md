@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # 🔐 Educational Crypto System
 
 Sistema educacional de criptografia homofônica para demonstração de conceitos de segurança cibernética.
