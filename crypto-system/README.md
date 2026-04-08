@@ -1,5 +1,5 @@
 # 🔐 CryptoSystem - Criptografia Homofônica
-> **Sistema educacional de criptografia homofônica com interface gráfica nativa (GTK) e cofre de mensagens.**
+> **Sistema próprio de criptografia homofônica com interface gráfica nativa (GTK) e cofre de mensagens.**
 
 ## ⚠️ Aviso Importante
 
