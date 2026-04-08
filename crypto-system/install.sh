@@ -43,23 +43,28 @@ install_system_deps() {
         dnf)
             # Fedora / Nobara / RHEL
             echo "   Usando dnf (Fedora/Nobara)..."
+            
+            # Nomes corretos dos pacotes no Fedora
             sudo dnf install -y \
                 python3-pip \
                 python3-devel \
                 python3-gobject \
                 python3-gobject-devel \
-                webkit2gtk4.0 \
-                webkit2gtk4.0-devel \
+                webkit2gtk4.1 \
+                webkit2gtk4.1-devel \
                 gtk3 \
                 gtk3-devel \
                 cairo \
                 cairo-devel \
+                cairo-gobject-devel \
                 gobject-introspection \
                 gobject-introspection-devel \
                 pkg-config \
                 gcc \
                 redhat-rpm-config \
-                libffi-devel
+                libffi-devel \
+                meson \
+                ninja-build
             ;;
         apt)
             # Debian / Ubuntu / Mint
@@ -77,7 +82,9 @@ install_system_deps() {
                 libffi-dev \
                 pkg-config \
                 gcc \
-                build-essential
+                build-essential \
+                meson \
+                ninja-build
             ;;
         pacman)
             # Arch Linux / Manjaro
@@ -90,7 +97,9 @@ install_system_deps() {
                 cairo \
                 gobject-introspection \
                 pkg-config \
-                gcc
+                gcc \
+                meson \
+                ninja
             ;;
         zypper)
             # openSUSE
@@ -104,7 +113,9 @@ install_system_deps() {
                 cairo-devel \
                 gobject-introspection-devel \
                 pkg-config \
-                gcc
+                gcc \
+                meson \
+                ninja
             ;;
         *)
             echo "❌ Gerenciador de pacotes não reconhecido!"
@@ -127,6 +138,7 @@ check_system_deps() {
     
     MISSING=0
     
+    # Verifica Cairo
     if ! pkg-config --exists cairo 2>/dev/null; then
         echo "   ❌ Cairo não encontrado"
         MISSING=1
@@ -134,6 +146,7 @@ check_system_deps() {
         echo "   ✅ Cairo encontrado"
     fi
     
+    # Verifica GTK
     if ! pkg-config --exists gtk+-3.0 2>/dev/null; then
         echo "   ❌ GTK+3 não encontrado"
         MISSING=1
@@ -141,17 +154,38 @@ check_system_deps() {
         echo "   ✅ GTK+3 encontrado"
     fi
     
-    if ! pkg-config --exists webkit2gtk-4.0 2>/dev/null; then
+    # Verifica WebKit (versões diferentes em cada distro)
+    if pkg-config --exists webkit2gtk-4.1 2>/dev/null; then
+        echo "   ✅ WebKit2GTK-4.1 encontrado"
+    elif pkg-config --exists webkit2gtk-4.0 2>/dev/null; then
+        echo "   ✅ WebKit2GTK-4.0 encontrado"
+    else
         echo "   ❌ WebKit2GTK não encontrado"
         MISSING=1
+    fi
+    
+    # Verifica GObject Introspection
+    if ! pkg-config --exists gobject-introspection-1.0 2>/dev/null; then
+        echo "   ❌ GObject Introspection não encontrado"
+        MISSING=1
     else
-        echo "   ✅ WebKit2GTK encontrado"
+        echo "   ✅ GObject Introspection encontrado"
     fi
     
     if [ $MISSING -eq 1 ]; then
         echo ""
         echo "⚠️  Dependências faltando. Instalando..."
         install_system_deps
+        
+        # Após instalar, verifica novamente
+        echo ""
+        echo "🔍 Verificando novamente..."
+        if pkg-config --exists cairo && pkg-config --exists gtk+-3.0; then
+            echo "   ✅ Todas as dependências instaladas com sucesso!"
+        else
+            echo "   ⚠️  Algumas dependências ainda podem estar faltando."
+            echo "   Tentando continuar mesmo assim..."
+        fi
     else
         echo "   ✅ Todas as dependências estão ok!"
     fi
@@ -165,6 +199,7 @@ if ! command -v python3 &> /dev/null; then
     echo "❌ Python3 não encontrado!"
     exit 1
 fi
+echo ""
 echo "✅ Python3 encontrado: $(python3 --version)"
 
 # Cria ambiente virtual
