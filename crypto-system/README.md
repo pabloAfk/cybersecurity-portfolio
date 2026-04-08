@@ -156,6 +156,7 @@ Gerador de Chaves	                Cria pares de chaves aleatórias
 
 ### 📦 O Cofre (Vault)
 Como Funciona
+
 O cofre armazena suas mensagens criptografadas em um arquivo JSON local:
 {
   "messages": [
@@ -174,12 +175,16 @@ O cofre armazena suas mensagens criptografadas em um arquivo JSON local:
 ~/githubmeu/cybersecurity-portfolio-main/crypto-system/src/backend/vault.json
 
 ## Capacidade
-Característica	     Valor
-Limite teórico	     Milhares de cifras
-Limite prático	     Centenas (arquivo leve)
-Tamanho por cifra	   ~200-300 bytes
-1.000 cifras	       ~300 KB
-Persistência	       ✅ Sim (reinicializações)
+
+Limite teórico: Milhares de cifras
+
+Limite prático: centenas (arquivo leve)
+
+Tamanho por cifra: ~200-300 bytes
+
+1.000 cifras: ~300 KB
+
+Persistência: ✅ Sim (reinicializações)
 
 comandos úteis:
 # Ver quantidade de mensagens
