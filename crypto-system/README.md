@@ -48,6 +48,7 @@ O **CryptoSystem** é uma aplicação completa de criptografia que demonstra con
 | **DevOps** | Shell Script, Instalador automático |
 
 ---
+(agradecimento especial a minha namorada que me inspirou a fazer uma interface frontend pra mostrar esse software pra ela e também me inspirou a transformar em um app gtk mais uma vez pra mostrar a ela sem que ela se confundisse no terminal)
 
 ## 🔐 Como Funciona a Criptografia
 
@@ -171,7 +172,7 @@ Tamanho por cifra: ~200-300 bytes
 Persistência: ✅ Sim (reinicializações)
 
 # comandos úteis:
-# Ver quantidade de mensagens
+### Ver quantidade de mensagens
 cat src/backend/vault.json | grep -c '"id"'
 
 ### Limpar cofre
@@ -256,17 +257,17 @@ CRUD completo para mensagens
 
 Auto-incremento de IDs
 
-### 🔒 Análise de Segurança
+# 🔒 Análise de Segurança
 Como um Analista Poderia Quebrar Este Sistema?
 Este sistema é educacional e propositalmente frágil para demonstração de conceitos.
 
-## 1. Ataque de Força Bruta
+### 1. Ataque de Força Bruta
 
-## 2. Análise de Frequência
+### 2. Análise de Frequência
 
-## 3. Padrões Detectáveis
+### 3. Padrões Detectáveis
 
-### ⚠️ Conclusão
+# ⚠️ Conclusão
 Este sistema é excelente para aprendizado, mas NUNCA use em produção!
 
 Para uso real, utilize:
@@ -277,7 +278,7 @@ RSA-2048+ para cifragem assimétrica
 
 Argon2 para hash de senhas
 
-### Adicionar Novas Funcionalidades
+# Adicionar Novas Funcionalidades
 Backend: Adicione rotas no main.py
 
 Frontend: Adicione elementos no dashboard.html
@@ -286,7 +287,7 @@ Lógica: Implemente no dashboard.js
 
 Criptografia: Modifique cipher_engine.py
 
-### 🗑️ Desinstalação
+# 🗑️ Desinstalação
 cd crypto-system
 
 ./scripts/uninstall.sh
@@ -297,7 +298,7 @@ Ambiente virtual
 Atalho do menu
 Dados do cofre (opcional)
 
-### 📝 Licença
+# 📝 Licença
 MIT License
 
 Copyright (c) 2024
@@ -319,11 +320,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-### Por fim
+# Por fim
 Projeto desenvolvido para portfólio de Cibersegurança
 
 Inspirado em sistemas de criptografia clássica
 
 Interface com estética "terminal classified"
 
-(agradecimento especial a minha namorada que me inspirou a fazer uma interface frontend pra mostrar esse software pra ela e também me inspirou a transformar em um app gtk mais uma vez pra mostrar a ela sem que ela se confundisse no terminal)
