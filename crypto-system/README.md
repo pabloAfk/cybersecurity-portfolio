@@ -270,16 +270,16 @@ Este sistema é educacional e propositalmente frágil para demonstração de con
 
 ### Por trás do código
 
-Este projeto começou como um simples script em Bash (crypto.sh) que eu usava pra 
+esse projeto começou como um simples script em Bash (crypto.sh) que eu usava pra 
 proteger senhas pessoais, mas quando tentei mostrar para minha namorada como funcionava, 
 a interface de terminal era... confusa 😅
 
 Foi assim que o projeto evoluiu:
-- `.sh` → Backend Python
-- Terminal → Interface Web
-- Web → App nativo GTK
+- `.sh` -> Backend Python
+- Terminal -> Interface Web
+- Web -> App nativo GTK
 
-**Dedico este projeto a ela**, que sem saber, me motivou a transformar um simples script 
+**dedico esse projeto a ela**, que sem saber, me motivou a transformar um simples script 
 em um sistema completo que hoje está no meu portfólio
 
 obrigado, amor
