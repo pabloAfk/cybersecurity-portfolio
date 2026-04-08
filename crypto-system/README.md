@@ -2,11 +2,11 @@
 > **Sistema educacional de criptografia homofônica com interface gráfica nativa (GTK) e cofre de mensagens.**
 
 ## ⚠️ Aviso Importante
-╔════════════════════════════════════════════════════════════════╗
-║ ESTE SISTEMA É PURAMENTE EDUCACIONAL                           ║
-║ Não utilize para proteger dados reais ou sensíveis!            ║
-║ A criptografia implementada é frágil e vulnerável a ataques.   ║
-╚════════════════════════════════════════════════════════════════╝
+
+ESTE SISTEMA É PURAMENTE EDUCACIONAL                           
+Não utilize para proteger dados reais ou sensíveis!            
+A criptografia implementada é frágil e vulnerável a ataques.   
+
 
 
 ## 📋 Índice
