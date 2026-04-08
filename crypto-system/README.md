@@ -192,3 +192,188 @@ rm src/backend/vault.json
 cp src/backend/vault.json vault-backup.json
 
 
+### 🛠️ Scripts e Componentes
+📄 start.sh - Ponto de Entrada
+O que faz:
+
+Verifica se o sistema está instalado
+
+Se não, executa install.sh
+
+Ativa ambiente virtual
+
+Tenta launcher.py (GTK), fallback para launcher_simple.py
+
+📄 scripts/install.sh - Instalador
+Etapas:
+
+Detecta gerenciador de pacotes (dnf/apt/pacman)
+
+Instala dependências do sistema
+
+Cria ambiente virtual Python
+
+Instala dependências Python (FastAPI, PyGObject, etc)
+
+Cria atalho no menu de aplicações
+
+📄 scripts/launcher.py - App GTK
+Características:
+
+Janela nativa com GTK/WebKit
+
+Barra de status com feedback
+
+Inicia backend automaticamente
+
+Detecta versão do WebKit (4.0/4.1)
+
+📄 src/backend/main.py - Servidor FastAPI
+Endpoints:
+
+Método	Endpoint	  Função
+POST	  /encrypt	  Criptografa texto
+POST	  /decrypt	  Descriptografa
+GET	    /vault	    Lista mensagens
+POST	  /vault	    Salva mensagem
+DELETE	/vault/{id}	Remove mensagem
+GET	    /health	    Status do sistema
+
+📄 src/backend/cipher_engine.py - Motor de Criptografia
+Funções principais:
+def encrypt(texto: str, key1: int, key2: int) -> str
+def decrypt(cifra: str, key1: int, key2: int) -> str
+Características:
+
+Mapeamento homofônico sem colisões
+
+Rotação dependente da posição
+
+Normalização de acentos e pontuação
+
+Suporte a 69 caracteres
+
+📄 src/backend/database.py - Gerenciador do Vault
+Funções:
+
+load_vault() / save_vault() - Persistência JSON
+
+CRUD completo para mensagens
+
+Auto-incremento de IDs
+
+### 🔒 Análise de Segurança
+Como um Analista Poderia Quebrar Este Sistema?
+Este sistema é educacional e propositalmente frágil para demonstração de conceitos.
+
+# 1. Ataque de Força Bruta
+Chaves são apenas 0-999 (1.000 possibilidades)
+for key1 in range(1000):
+    for key2 in range(1000):
+        teste = decrypt(cifra, key1, key2)
+        if "palavra_esperada" in teste:
+            print(f"Chaves encontradas: {key1}, {key2}")
+
+# 2. Análise de Frequência
+Como a cifra é monoalfabética (cada caractere vira 5 fixos), é possível:
+
+Mapear blocos de 5 caracteres para letras
+
+Usar frequência de letras em português
+
+
+# 3. Padrões Detectáveis
+
+Cada caractere SEMPRE vira 5 caracteres
+
+Mesmo caractere vira MESMO bloco (com mesma key1)
+
+### ⚠️ Conclusão
+Este sistema é excelente para aprendizado, mas NUNCA use em produção!
+
+Para uso real, utilize:
+
+AES-256-GCM para cifragem simétrica
+
+RSA-2048+ para cifragem assimétrica
+
+Argon2 para hash de senhas
+
+### 🔧 Desenvolvimento
+Rodar em Modo Desenvolvimento
+#Terminal 1 - Backend
+cd src/backend
+python main.py
+
+#Terminal 2 - Frontend (opcional, já serve via FastAPI)
+#Acesse http://localhost:8000
+
+### Debug do Launcher GTK
+#Rodar com saída de erro
+python scripts/launcher.py 2>&1 | tee debug.log
+
+#Verificar versão do WebKit
+python -c "from gi.repository import WebKit2; print(WebKit2.get_major_version())"
+
+### Testar API via cURL
+#Criptografar
+curl -X POST http://localhost:8000/encrypt \
+  -H "Content-Type: application/json" \
+  -d '{"text":"teste","key1":123,"key2":456}'
+
+#Descriptografar
+curl -X POST http://localhost:8000/decrypt \
+  -H "Content-Type: application/json" \
+  -d '{"ciphertext":"S:...","key1":123,"key2":456}'
+
+#Listar cofre
+curl http://localhost:8000/vault
+
+### Adicionar Novas Funcionalidades
+Backend: Adicione rotas no main.py
+
+Frontend: Adicione elementos no dashboard.html
+
+Lógica: Implemente no dashboard.js
+
+Criptografia: Modifique cipher_engine.py
+
+### 🗑️ Desinstalação
+cd crypto-system
+./scripts/uninstall.sh
+
+# remove tudo:
+Ambiente virtual
+Atalho do menu
+Dados do cofre (opcional)
+
+### 📝 Licença
+MIT License
+
+Copyright (c) 2024
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+### Por fim
+Projeto desenvolvido para portfólio de Cibersegurança
+
+Inspirado em sistemas de criptografia clássica
+
+Interface com estética "terminal classified"
+
+(agradecimento especial a minha namorada que me inspirou a fazer uma interface frontend pra mostrar esse software pra ela e também me inspirou a transformar em um app gtk mais uma vez pra mostrar a ela sem que ela se confundisse no terminal)
