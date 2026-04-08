@@ -29,3 +29,44 @@ cd crypto-system
 ./install.sh
 
 # 3. Acesse http://localhost:8000
+
+### Opção 3: Sem Docker
+
+# 1. Crie ambiente virtual
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate   # Windows
+
+# 2. Instale dependências
+pip install -r requirements.txt
+
+# 3. Rode o backend
+cd backend
+python main.py
+
+🔐 Como funciona a criptografia
+Homofônica: Cada caractere vira 5 caracteres aleatórios
+
+Duas chaves: key1 (mapa) + key2 (rotação)
+
+Salt: Prefixo S: para identificar cifras
+
+⚠️ Limitações de Segurança
+Não é seguro para produção - apenas educacional
+
+Vulnerável a análise de frequência
+
+Chaves curtas (0-999) - brute force possível
+
+Sem autenticação da mensagem
+
+🛠️ Tecnologias
+FastAPI + Uvicorn
+
+SQLModel + SQLite
+
+JWT + Bcrypt
+
+Docker
+
+HTML/CSS/JavaScript
