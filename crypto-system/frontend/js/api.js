@@ -13,7 +13,6 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // O cookie é enviado automaticamente com withCredentials: true
-    // Mas podemos também ler do localStorage se quiser fallback
     const token = localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -28,9 +27,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expirado ou inválido
       localStorage.removeItem('access_token');
-      window.location.href = '/login';
+      // Redireciona para index.html (não /login)
+      if (!window.location.pathname.includes('index.html') && 
+          !window.location.pathname.includes('/')) {
+        window.location.href = '/index.html';
+      }
     }
     return Promise.reject(error);
   }
