@@ -12,7 +12,7 @@ Este portfólio foi criado com o objetivo de:
 
 - Demonstrar minhas habilidades técnicas em cibersegurança
 - Aplicar conceitos reais de SOC (Security Operations Center)
-- Desenvolver ferramentas próprias voltadas para análise e detecção de ameaças
+- Desenvolver ferramentas próprias voltadas para segurança
 - Evoluir continuamente através de projetos práticos
 
 ---
@@ -24,6 +24,7 @@ Este portfólio foi criado com o objetivo de:
 - 🚨 Detecção de ameaças
 - 🖥️ Monitoramento de sistemas
 - 🌐 Redes e segurança
+- 🔒 Criptografia
 
 ---
 
@@ -34,6 +35,7 @@ Este portfólio foi criado com o objetivo de:
 - Git & GitHub
 - YARA
 - APIs de Threat Intelligence (planejado)
+- JSON
 
 ---
 
