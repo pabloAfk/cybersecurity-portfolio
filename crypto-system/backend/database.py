@@ -6,41 +6,42 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# USANDO SQLITE (mais fácil para começar)
+# Usando SQLite (mais fácil para começar)
 DATABASE_URL = "sqlite:///../database/crypto.db"
 
 # Engine para SQLite
 engine = create_engine(
     DATABASE_URL, 
-    connect_args={"check_same_thread": False}  # Necessário para SQLite
+    connect_args={"check_same_thread": False}
 )
 
 # ========== MODELS ==========
 class User(SQLModel, table=True):
     __tablename__ = "users"
     
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)  # ✅ Anotação explícita
     username: str = Field(unique=True, index=True)
     password_hash: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
+    # Relacionamento com vault
     vault_items: List["Vault"] = Relationship(back_populates="user")
 
 class Vault(SQLModel, table=True):
     __tablename__ = "vault"
     
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)  # ✅ Anotação explícita
     user_id: int = Field(foreign_key="users.id")
     encrypted_message: str
     key1: int
     key2: int
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
+    # Relacionamento com user
     user: User = Relationship(back_populates="vault_items")
 
 def init_db():
     """Cria as tabelas no banco"""
-    # Garante que o diretório database existe
     os.makedirs("../database", exist_ok=True)
     SQLModel.metadata.create_all(engine)
     print("✅ Database initialized! (SQLite)")
