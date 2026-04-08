@@ -48,7 +48,6 @@ O **CryptoSystem** é uma aplicação completa de criptografia que demonstra con
 | **DevOps** | Shell Script, Instalador automático |
 
 ---
-(agradecimento especial a minha namorada que me inspirou a fazer uma interface frontend pra mostrar esse software pra ela e também me inspirou a transformar em um app gtk mais uma vez pra mostrar a ela sem que ela se confundisse no terminal)
 
 ## 🔐 Como Funciona a Criptografia
 
@@ -266,6 +265,24 @@ Este sistema é educacional e propositalmente frágil para demonstração de con
 ### 2. Análise de Frequência
 
 ### 3. Padrões Detectáveis
+
+# Agradecimento Especial
+
+### Por trás do código
+
+Este projeto começou como um simples script em Bash (crypto.sh) que eu usava pra 
+proteger senhas pessoais, mas quando tentei mostrar para minha namorada como funcionava, 
+a interface de terminal era... confusa 😅
+
+Foi assim que o projeto evoluiu:
+- `.sh` → Backend Python
+- Terminal → Interface Web
+- Web → App nativo GTK
+
+**Dedico este projeto a ela**, que sem saber, me motivou a transformar um simples script 
+em um sistema completo que hoje está no meu portfólio
+
+obrigado, amor
 
 # ⚠️ Conclusão
 Este sistema é excelente para aprendizado, mas NUNCA use em produção!
