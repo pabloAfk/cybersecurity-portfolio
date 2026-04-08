@@ -29,9 +29,9 @@ cd crypto-system
 ./install.sh
 
 # 3. Acesse http://localhost:8000
-
+```
 ### Opção 3: Sem Docker
-
+```bash
 # 1. Crie ambiente virtual
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
@@ -43,7 +43,7 @@ pip install -r requirements.txt
 # 3. Rode o backend
 cd backend
 python main.py
-
+``
 🔐 Como funciona a criptografia
 Homofônica: Cada caractere vira 5 caracteres aleatórios
 
