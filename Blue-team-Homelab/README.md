@@ -46,3 +46,9 @@ Este homelab foi criado com o objetivo de estudar e praticar conceitos de segura
 - Entender a correlação entre ações ofensivas e defensivas
 
 *Documentação atualizada em: Abril/2026*
+
+Blue-team-Homelab/
+├── README.md # Este arquivo
+├── setup/ # Scripts de configuração
+├── notes/ # Anotações de estudo
+└── scans/ # Logs de scans e ataques
