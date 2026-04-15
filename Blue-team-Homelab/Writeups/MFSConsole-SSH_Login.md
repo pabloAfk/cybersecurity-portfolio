@@ -1,9 +1,9 @@
 # Metasploit (Brute Force SSH com ssh_login)
-🧠 Visão geral
+visão geral
 
 Aqui foi utilizado o Metasploit Framework para testar acesso via SSH usando credenciais.
 
-👉 ideia geral:
+ideia geral:
 
 descobrir um serviço SSH ativo
 tentar autenticar com usuário/senha
@@ -12,12 +12,12 @@ validar se o acesso é possível
 ## Fluxo completo usado
 
 ### 1. Abrindo
-msfconsole
+🖥️ msfconsole
 
 inicializa o framework e conecta ao banco de dados
 
 ### 2. Procurando módulo
-search ssh_login
+🖥️ search ssh_login
 
 resultado:
 
@@ -30,10 +30,10 @@ usando credenciais definidas
 ou listas (wordlists)
 
 ### 3. Usando o módulo
-use auxiliary/scanner/ssh/ssh_login
+🖥️ use auxiliary/scanner/ssh/ssh_login
 
 ### 4. Definindo o alvo
-set RHOSTS xxx.xxx.xxx.xxx
+🖥️ set RHOSTS xxx.xxx.xxx.xxx
 
 RHOSTS = IP do alvo
 
@@ -43,7 +43,11 @@ RHOSTS = IP do alvo
 
 antes de atacar, normalmente precisa descobrir se o SSH tá aberto
 
-Isso é feito com o Nmap: nmap -p 22 xxx.xxx.xxx.xxx, ou mais completo: nmap -sV xxx.xxx.xxx.xxx
+Isso é feito com o Nmap: 
+🖥️ nmap -p 22 xxx.xxx.xxx.xxx
+
+ou mais completo: 
+🖥️ nmap -sV xxx.xxx.xxx.xxx
 
 ## o que isso faz:
 
@@ -55,9 +59,9 @@ exemplo de resultado:
 22/tcp open  ssh  OpenSSH 8.2
 
 ### 5. Definindo usuário
-set USERNAME nometeste
+🖥️ set USERNAME nometeste
 ### 6. Definindo senha
-set PASSWORD senhateste
+🖥️ set PASSWORD senhateste
 
 # Aqui entra o perigo do OSINT
 
@@ -66,17 +70,17 @@ em cenário real, o atacante raramente “chuta” senha aleatória, ele usa OSI
 ## exemplos de onde vem senha:
 
 redes sociais
+
 datas importantes (aniversário)
+
 nome de pet
-padrões comuns:
-nome123
-empresa2024
-123456
 
 isso vira:
 
 wordlists personalizadas
+
 muito mais eficaz que brute force cego
+
 
 exemplo:
 se a vítima posta:
@@ -88,7 +92,7 @@ senha possível:
 rex123
 
 ### 7. Executando o ataque
-run
+🖥️ run
 
 o Metasploit vai:
 
