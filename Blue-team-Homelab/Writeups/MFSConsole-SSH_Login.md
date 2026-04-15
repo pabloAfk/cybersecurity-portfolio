@@ -112,11 +112,20 @@ Se falhar:
 # resumo sem comentários:
 nmap xxx.xxx.xxx.xxx
 
+
+
 msfconsole
+
 search ssh_login
+
 use auxiliary/scanner/ssh/ssh_login
 
+
 set RHOSTS xxx.xxx.xxx.xxx
+
 set USERNAME teste
+
 set PASSWORD teste
+
 run
+
