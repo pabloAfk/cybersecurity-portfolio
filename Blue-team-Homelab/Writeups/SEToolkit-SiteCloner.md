@@ -96,16 +96,26 @@ ou seja, clonando algo local → ambiente controlado
 Depois disso, o SEToolkit:
 
 baixa o conteúdo do site
+
 cria uma página fake local
+
 injeta código pra capturar dados
+
 sobe um servidor web
+
 espera alguém acessar
+
 📥 Resultado esperado
 
 Quando alguém acessa o link:
 
 vê um site igual ao original
+
 digita login/senha
+
 SET salva algo tipo:
+
 username: teste
+
 password: 123456
+
