@@ -37,10 +37,15 @@ foco em enganar o usuário via navegador
 📌 O que é:
 
 método que não invade nada diretamente
+
 apenas captura dados que o usuário digitar
+
 funciona assim:
+
 vítima acessa página falsa
+
 digita login/senha
+
 dados são enviados pro atacante
 
 ### 4) Forma de criação do site falso 2. Site Cloner
