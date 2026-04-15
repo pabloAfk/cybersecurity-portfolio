@@ -48,13 +48,17 @@ dados são enviados pro atacante
 📌 O que é:
 
 clona um site real automaticamente
+
 copia HTML/CSS da página
+
 deixa visualmente igual ao original
 
 👉 diferença pras outras opções:
 
 Web Templates → usa modelos prontos (tipo login fake genérico)
+
 Site Cloner → copia um site real (mais convincente)
+
 Custom Import → você mesmo fornece os arquivos
 
 ### 5. IP para receber os dados
@@ -63,9 +67,10 @@ IP address for the POST back: 127.0.0.1
 📌 O que é:
 
 endereço onde os dados capturados vão ser enviados
+
 basicamente o “servidor do atacante”
 
-👉 no teu caso:
+👉 no meu caso:
 
 127.0.0.1 → loopback (localhost)
 ou seja, tudo ficou dentro da própria VM (perfeito pra lab 👍)
