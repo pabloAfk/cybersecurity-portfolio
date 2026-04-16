@@ -2,9 +2,11 @@
 
 O SEToolkit (Social-Engineer Toolkit) é uma ferramenta focada em ataques de engenharia social, nesse caso, o que foi feito foi um ataque de clonagem de site com captura de credenciais (Credential Harvester)
 
-ideia geral: clonar um site, eenganar o usuário pra ele inserir login/senha e capturar esses dados
+ideia geral: clonar um site, enganar o usuário pra ele inserir login/senha e capturar esses dados
 
 (obviamente só em ambiente de teste, VM, lab, etc)
+
+sempre verifique suas URLs
 
 
 ### 1)Menu Principal 
