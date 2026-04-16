@@ -1,121 +1,49 @@
 # SEToolkit (Clonagem de Site / Credential Harvester)
-Visão geral
 
-O SEToolkit (Social-Engineer Toolkit) é uma ferramenta focada em ataques de engenharia social.
-Nesse caso, o que foi feito foi um ataque de clonagem de site com captura de credenciais (Credential Harvester).
+O SEToolkit (Social-Engineer Toolkit) é uma ferramenta focada em ataques de engenharia social, nesse caso, o que foi feito foi um ataque de clonagem de site com captura de credenciais (Credential Harvester)
 
-ideia geral:
-
-clonar um site
-
-enganar o usuário pra ele inserir login/senha
-
-capturar esses dados
-
+ideia geral: clonar um site, eenganar o usuário pra ele inserir login/senha e capturar esses dados
 
 (obviamente só em ambiente de teste, VM, lab, etc)
 
-## Fluxo completo usado
 
-### 1)Menu Principal 1.Social-Engineering Attacks
+### 1)Menu Principal 
+1.Social-Engineering Attacks
 
-   
-### O que é:
+área principal de ataques de engenharia social, tudo que envolve manipular usuário ao invés de explorar sistema direto
 
-área principal de ataques de engenharia social
-tudo que envolve manipular usuário ao invés de explorar sistema direto
+### 2) Tipo de ataque 
+2. Website Attack Vectors
 
-### 2) Tipo de ataque 2. Website Attack Vectors
+ataques baseados em páginas web, foco em enganar o usuário via navegador
 
- O que é:
+### 3) Método de ataque web 
+3. Credential Harvester Attack Method
 
-ataques baseados em páginas web
-foco em enganar o usuário via navegador
+método que não invade nada diretamente, apenas captura dados que o usuário digitar
 
-### 3) Método de ataque web 3. Credential Harvester Attack Method
+vítima acessa página falsa - digita login/senha - dados são enviados pro atacante
 
-📌 O que é:
+### 4) Forma de criação do site falso 
+2. Site Cloner
 
-método que não invade nada diretamente
+clona um site real automaticamente, copia HTML/CSS da página e deixa visualmente igual ao original
 
-apenas captura dados que o usuário digitar
-
-funciona assim:
-
-vítima acessa página falsa
-
-digita login/senha
-
-dados são enviados pro atacante
-
-### 4) Forma de criação do site falso 2. Site Cloner
-
-📌 O que é:
-
-clona um site real automaticamente
-
-copia HTML/CSS da página
-
-deixa visualmente igual ao original
-
-👉 diferença pras outras opções:
-
-Web Templates → usa modelos prontos (tipo login fake genérico)
-
-Site Cloner → copia um site real (mais convincente)
-
-Custom Import → você mesmo fornece os arquivos
+diferença pras outras opções: Web Templates usa modelos prontos (tipo login fake genérico), Site Cloner copia um site real (mais convincente) e Custom Import você mesmo fornece os arquivos
 
 ### 5. IP para receber os dados
 IP address for the POST back: 127.0.0.1
 
-📌 O que é:
+endereço onde os dados capturados vão ser enviados, basicamente o “servidor do atacante”
 
-endereço onde os dados capturados vão ser enviados
-
-basicamente o “servidor do atacante”
-
-👉 no meu caso:
-
-127.0.0.1 → loopback (localhost)
-ou seja, tudo ficou dentro da própria VM (perfeito pra lab 👍)
+no meu caso usei 127.0.0.1 (localhost), ou seja, tudo ficou dentro da própria VM
 
 ### 6. URL do site a ser clonado
-Enter the url to clone:
+Enter the url to clone: (site que será copiado)
 
-📌 O que é:
+##  o que acontece por trás
 
-site que será copiado
+depois disso, o SEToolkit baixa o conteúdo do site, cria uma página fake local, injeta código pra capturar dados, sobe um servidor web e espera alguém acessar
 
-👉 no meu teste:
-
-usei localhost
-ou seja, clonando algo local → ambiente controlado
-##  O que acontece por trás
-
-Depois disso, o SEToolkit:
-
-baixa o conteúdo do site
-
-cria uma página fake local
-
-injeta código pra capturar dados
-
-sobe um servidor web
-
-espera alguém acessar
-
-📥 Resultado esperado
-
-Quando alguém acessa o link:
-
-vê um site igual ao original
-
-digita login/senha
-
-SET salva algo tipo:
-
-username: teste
-
-password: 123456
+quando alguém acessa o link vê um site igual ao original, digita login/senha, SET salva algo tipo: username: teste | password: 123456
 
