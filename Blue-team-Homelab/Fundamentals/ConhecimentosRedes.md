@@ -1,4 +1,4 @@
-# Protocolos de Rede
+# Protocolos de Rede e Portas
 ### aqui eu vou detalhar mais sobre meus conhecimentos em alguns Protocolos de Rede e Portas que adquiri com os estudos de Nmap e Wireshark
 
 ## 1. HTTP
@@ -49,3 +49,12 @@ Superfície de Ataque: DHCP Starvation (Requerimento de todos os IPs possíveis 
 o Transmission Control Protocol, protocolo de transferência que prioriza a integridade dos dados e informação
 
 Superfície de Ataque: TCP SYN Flood (O atacante envia milhares de pedidos de conexão mas nunca responde, o servidor fica guardando memória para essas conexões que nunca se completam até travar)
+
+# Portas
+### algumas portas TCP
+
+## 1. 3306
+a porta padrão MySQL
+
+## 2. 5432
+a porta padrão PostgreSQL
