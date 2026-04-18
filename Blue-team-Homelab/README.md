@@ -53,7 +53,7 @@ Blue-team-Homelab/
 
 ├── setup/ # Scripts de configuração
 
-├── notes/ # Anotações de estudo
+├── Writeups/ # Anotações de estudo (Ferramentas)
 
-└── scans/ # Logs de scans e ataques
+└── Fundamentals/ # Anotações de estudo (Não-Ferramentas)
 
