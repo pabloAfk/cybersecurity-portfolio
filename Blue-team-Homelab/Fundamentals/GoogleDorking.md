@@ -37,7 +37,7 @@ inurl:"view/view.shtml"
 
 muitas câmeras de segurança antigas ou mal configuradas usam URLs padrão que o Google indexa, permitindo acesso direto ao streaming
 
-## Arquivos de Ambiente):
+## Arquivos de Ambiente:
 filetype:env DB_PASSWORD
 
 arquivos .env são usados por frameworks modernos (como Node.js e Laravel) pra armazenar segredos de API e senhas, se o servidor estiver mal configurado, o Google indexa
