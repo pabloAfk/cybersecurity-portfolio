@@ -1,0 +1,17 @@
+ORIGEM E EVOLUÇÃO do x86-64
+
+Pelo que eu estudei, eu entendi que: a Intel lançou em 1978 o processador 8086,
+que era um chip de 16 bits. Ele introduziu o conjunto de instruções x86 (nome que
+vem do sufixo dado aos sucessores como 80186, 80286, 80386 e 80486). Porém em
+1981, a IBM escolheu o Intel 8088 (variação do 8086) pro IBM PC, padronizando a
+arquitetura no mercado de computadores pessoais
+
+Em 1985, a intel lançou o 80386 (ou i386), a arquitetura evoluiu pra 32 bits, 
+introduzindo suporte a memória protegida e paginação avançada, o que era fundamental
+pros sistemas modernos operarem em multitarefa, nos anos 2000, a Intel 
+tentou substituir o x86 por uma nova arquitetura de 64 bits chamada
+de Itanium (IA-64), que não era retrocompatível com programas x86 antigos, a
+AMD aproveitou a brecha e criou a AMD64 (ou x86-64), uma extensão direta que rodava
+software de 32 bits nativamente e estendia o espaço de endereçamento de memória
+pra 64 bits, o mercado adotou a solução da AMD massivamente, forçando a Intel
+a licenciar essa extensão
