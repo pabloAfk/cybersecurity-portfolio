@@ -1,0 +1,15 @@
+LEIA PRIMEIRO O x86-64.txt PRA ENTENDER
+
+Enquanto o x86 focava em desempenho máximo pra desktops na tomada, a ARM 
+(Acorn RISC Machine, fundada no Reino Unido na década de 1980) seguiu
+a filosofia RISC
+
+ - Em vez de instruções complexas que demoram múltiplos ciclos de clock pra rodar,
+  o ARM usa instruções simples executadas em 1 ciclo
+
+ - A empresa ARM não fabrica os chips, ela projeta o conjunto de instruções (ISA)
+  e os núcleos (Cortex-A, Cortex-M) e licencia pra fabricantes como Apple 
+  (Apple Silicon M/A Series), Qualcomm (Snapdragon), Samsung e MediaTek
+
+ - Extrema eficiência energética por Watt, domina 99% dos smartphones, tablets e
+  dispositivos IoT, hoje avançou fortemente pra laptops e servidores
