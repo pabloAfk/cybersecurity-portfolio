@@ -1,0 +1,7 @@
+Termos como S905X, S905X4 ou variações de modelos de tvbox e placas embarcadas
+não são arquiteturas de CPU, mas o modelo do SoC fabricado pela Amlogic
+
+ - Utilizam núcleos ARM Cortex
+
+ - Trata-se de um pacote completo que reúne CPU, GPU, decodificadores de vídeo
+  e controladores de memória em uma única peça de silício barata
