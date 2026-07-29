@@ -1,0 +1,4 @@
+Uma arquitetura aberta e isenta de royalties mantida por uma fundação
+internacional, ganhou tração global na indústria por permitir que
+qualquer empresa crie chips sob medida sem pagar licenças caras pra ARM ou Intel
+
