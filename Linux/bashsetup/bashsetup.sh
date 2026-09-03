@@ -249,10 +249,15 @@ create_env() {
 
 # EDITOR
 # export EDITOR="vim"
-# export VISUAL="vim"
+# export EDITOR="nvim"
+# export EDITOR="micro"
+# export EDITOR="nano"
+# export EDITOR="gedit"
+# export EDITOR="emacs"
 
 # PAGER
 # export PAGER="less"
+# export PAGER="more"
 
 # PATH
 # export PATH="$HOME/.local/bin:$PATH"
@@ -294,6 +299,8 @@ ${c}alias ..='cd ..'
 ${c}alias ...='cd ../..'
 ${c}alias ....='cd ../../..'
 ${c}alias .....='cd ../../../..'
+${c}alias ff='fastfetch'
+${c}alias cdconf='cd ~/.bashrc.d/'
 
 # SEGURANÇA
 ${c}alias rm='rm -i'
@@ -304,7 +311,7 @@ ${c}alias mv='mv -i'
 ${c}alias c='clear'
 ${c}alias e='exit'
 ${c}alias h='history'
-${c}alias reload='source ~/.bashrc && echo "✓ Bashrc recarregado!"'
+${c}alias reload='source ~/.bashrc && echo "bashrc recarregado"'
 ${c}alias cf='clear && fastfetch'
 
 # MONITORAMENTO
@@ -465,6 +472,9 @@ create_prompt() {
 
 # PROMPT COLORIDO
 # export PS1="\[\e[32m\]\u@\h\[\e[m\]:\[\e[34m\]\w\[\e[m\]\$ "
+
+# PROMPT DEFAULT
+# export PS1='\ \w '
 
 # CORES DO LS
 # eval "$(dircolors -b 2>/dev/null)"
