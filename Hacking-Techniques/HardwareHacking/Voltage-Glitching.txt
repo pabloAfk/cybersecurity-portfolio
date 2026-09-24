@@ -1,0 +1,17 @@
+enquanto eu estudava sobre shellcode e me aprofundava nos conceitos de ponteiro no processador, descobri algo chamado 
+voltage glitching, o interesse fez eu anotar no meu repositório sobre
+
+o voltage glitching (ou falha de voltagem) é um tipo de ataque de hardware onde se manipula de forma rápida e proposital 
+a energia de um dispositivo para alterar o seu funcionamento,
+
+O atacante provoca uma queda ou um pico breve na tensão elétrica que alimenta o chip (como o processador ou o microcontrolador),
+essa alteração dura apenas alguns nanossegundos ou microssegundos, o circuito integrado sofre instabilidade temporária e pode 
+pular instruções de código, corromper dados ou ler valores errados em registradores
+
+entre as funcionalidades estão:
+
+burlar senhas ou telas de login: fazer o processador ignorar uma checagem de senha ou de segurança
+
+desativar travas de fábrica: ler firmwares protegidos ou clonar dispositivos eletrônicos
+
+acessar criptografia: extrair chaves privadas de criptografia armazenadas em cartões inteligentes ou carteiras de criptomoedas
