@@ -1,0 +1,13 @@
+um malware rodando no sistema operacional oferece perigo, mas certamente um malware rodando em uma camada mais baixa que 
+o SO oferece bem mais, UEFI RootKit é um tipo de malware que infecta o firmware, especificamente UEFI (substituto da antiga BIOS)
+
+alguns dos motivos de ser tão perigoso:
+
+1) ele fica armazenado no chip de memória flash SPI da placa-mãe, e não no disco rígido
+
+2) é executado antes mesmo de o sistema operacional ser carregado
+
+3) sobrevive à formatação do disco rígido e à troca ou reinstalação do sistema operacional, pois continua gravado no hardware
+
+4) antivírus tradicionais que rodam dentro do sistema operacional geralmente não conseguem enxergar ou alcançar essa 
+camada do firmware
